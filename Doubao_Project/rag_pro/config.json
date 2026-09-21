@@ -1,0 +1,34 @@
+{
+  "retrieval": {
+    "top_lex": 20,
+    "top_vec": 20,
+    "rrf_k": 60
+  },
+  "rerank": {
+    "w_lex": 0.35,
+    "w_vec": 0.35,
+    "w_pos": 0.10,
+    "w_exact": 0.20,
+    "use_mmr": true,
+    "mmr_lambda": 0.7
+  },
+  "embed": {
+    "mode": "auto",
+    "vocab_size": 4096,
+    "base_url": "",
+    "api_key": "",
+    "model": "",
+    "cache_path": "store/embed_cache.json"
+  },
+  "llm": {
+    "base_url": "",
+    "api_key": "",
+    "model": "",
+    "temperature": 0.3,
+    "max_tokens": 1024
+  },
+  "context": {
+    "max_tokens": 1800
+  },
+  "gen_mode": "auto"
+}

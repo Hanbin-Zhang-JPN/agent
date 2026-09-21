@@ -1,0 +1,12 @@
+# 编译产物
+build/
+*.exe
+*.o
+*.out
+
+# 程序运行生成的演示文件
+11-file/note.txt
+
+# 系统文件
+.DS_Store
+Thumbs.db

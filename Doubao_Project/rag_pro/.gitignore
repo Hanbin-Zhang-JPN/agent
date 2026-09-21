@@ -1,0 +1,19 @@
+# rag_pro 项目的忽略规则
+
+# 索引产物与运行时缓存（由 build 生成，可随时重建）
+store/
+*.pkl
+*.json.tmp
+
+# Python 缓存与编译产物
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 编辑器与系统文件
+.DS_Store
+.idea/
+.vscode/
+*.swp

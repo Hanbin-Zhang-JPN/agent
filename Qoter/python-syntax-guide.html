@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 语法详解 · 学习资料</title>
+<style>
+  :root {
+    --bg: #1a1b26;
+    --bg-elev: #24283b;
+    --bg-code: #1e2030;
+    --sidebar: #16161e;
+    --text: #c0caf5;
+    --text-dim: #9aa5ce;
+    --text-mute: #565f89;
+    --accent: #7aa2f7;
+    --accent-2: #bb9af7;
+    --green: #9ece6a;
+    --orange: #ff9e64;
+    --red: #f7768e;
+    --cyan: #7dcfff;
+    --yellow: #e0af68;
+    --border: #2a2e42;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+  }
+
+  /* ---------- 侧边导航 ---------- */
+  #sidebar {
+    width: 260px;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+    padding: 28px 18px;
+  }
+  #sidebar h2 {
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  #sidebar .sub { color: var(--text-mute); font-size: 12px; margin-bottom: 20px; }
+  #sidebar a {
+    display: block;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: background .15s, color .15s;
+  }
+  #sidebar a:hover { background: var(--bg-elev); color: var(--accent); }
+
+  #sidebar::-webkit-scrollbar { width: 8px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ---------- 主内容 ---------- */
+  main {
+    margin-left: 260px;
+    max-width: 900px;
+    padding: 48px 56px 120px;
+    width: 100%;
+  }
+
+  header.hero {
+    margin-bottom: 48px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  header.hero h1 {
+    font-size: 40px;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  header.hero p { color: var(--text-dim); margin-top: 12px; font-size: 17px; }
+
+  section { margin-bottom: 56px; scroll-margin-top: 24px; }
+
+  h2.section-title {
+    font-size: 27px;
+    color: var(--cyan);
+    margin-bottom: 18px;
+    padding-left: 14px;
+    border-left: 4px solid var(--accent);
+  }
+  h3 {
+    font-size: 20px;
+    color: var(--accent-2);
+    margin: 28px 0 12px;
+  }
+  p { margin-bottom: 14px; color: var(--text-dim); }
+  ul, ol { margin: 0 0 16px 26px; color: var(--text-dim); }
+  li { margin-bottom: 6px; }
+
+  a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); }
+
+  /* ---------- 行内代码 ---------- */
+  code.inline {
+    background: var(--bg-code);
+    color: var(--orange);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace;
+    font-size: 14px;
+    border: 1px solid var(--border);
+  }
+
+  /* ---------- 代码块 ---------- */
+  pre {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 14px 0 20px;
+    box-shadow: 0 4px 14px var(--shadow);
+    position: relative;
+  }
+  pre code {
+    font-family: "SF Mono", "JetBrains Mono", Consolas, Menlo, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    display: block;
+    white-space: pre;
+  }
+  pre::-webkit-scrollbar { height: 9px; }
+  pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* 语法高亮 token */
+  .kw  { color: var(--red); }
+  .fn  { color: var(--accent); }
+  .str { color: var(--green); }
+  .num { color: var(--orange); }
+  .cmt { color: var(--text-mute); font-style: italic; }
+  .bi  { color: var(--cyan); }
+  .op  { color: var(--accent-2); }
+  .self{ color: var(--yellow); font-style: italic; }
+
+  /* ---------- 提示框 ---------- */
+  .note {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-left: 4px solid var(--accent);
+    background: rgba(122,162,247,0.08);
+  }
+  .note.tip  { border-color: var(--green);  background: rgba(158,206,106,0.08); }
+  .note.warn { border-color: var(--yellow); background: rgba(224,175,104,0.08); }
+  .note strong { color: var(--text); }
+
+  /* ---------- 表格 ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 20px;
+    font-size: 14px;
+    background: var(--bg-elev);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg-code); color: var(--accent); font-weight: 600; }
+  td { color: var(--text-dim); }
+  td code { color: var(--orange); font-family: "SF Mono", Consolas, monospace; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ---------- 回到顶部 ---------- */
+  #top-btn {
+    position: fixed; bottom: 30px; right: 30px;
+    background: var(--accent); color: var(--bg);
+    width: 46px; height: 46px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; cursor: pointer; text-decoration: none;
+    box-shadow: 0 4px 14px var(--shadow); opacity: 0; transition: opacity .3s;
+  }
+  #top-btn.show { opacity: 0.9; }
+  #top-btn:hover { opacity: 1; }
+
+  @media (max-width: 860px) {
+    #sidebar { display: none; }
+    main { margin-left: 0; padding: 32px 20px 100px; }
+    header.hero h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h2>Python 语法详解</h2>
+  <div class="sub">从零到进阶 · 速查手册</div>
+  <a href="#intro">0. 简介与运行</a>
+  <a href="#vars">1. 变量与数据类型</a>
+  <a href="#operators">2. 运算符</a>
+  <a href="#strings">3. 字符串</a>
+  <a href="#collections">4. 容器类型</a>
+  <a href="#control">5. 流程控制</a>
+  <a href="#functions">6. 函数</a>
+  <a href="#comprehension">7. 推导式</a>
+  <a href="#oop">8. 面向对象</a>
+  <a href="#exception">9. 异常处理</a>
+  <a href="#modules">10. 模块与包</a>
+  <a href="#files">11. 文件操作</a>
+  <a href="#advanced">12. 进阶特性</a>
+  <a href="#stdlib">13. 常用标准库</a>
+  <a href="#tips">14. 实用技巧</a>
+</nav>
+
+<main>
+  <header class="hero">
+    <h1>Python 语法详解</h1>
+    <p>一份面向初学者与进阶者的完整语法速查资料 · 暗色护眼模式 · 基于 Python 3.x</p>
+  </header>
+
+  <!-- 0. 简介 -->
+  <section id="intro">
+    <h2 class="section-title">0. 简介与运行</h2>
+    <p>Python 是一门简洁、易读的解释型高级编程语言,广泛用于 Web 开发、数据科学、人工智能、自动化脚本等领域。它以 <strong>缩进</strong> 表示代码块,而非花括号。</p>
+    <h3>运行方式</h3>
+    <pre><code><span class="cmt"># 1. 直接运行脚本文件</span>
+python hello.py
+
+<span class="cmt"># 2. 进入交互式解释器(REPL)</span>
+python
+
+<span class="cmt"># 3. 单行执行</span>
+python -c <span class="str">"print('Hello, World!')"</span></code></pre>
+
+    <h3>第一个程序</h3>
+    <pre><code><span class="cmt"># hello.py</span>
+<span class="fn">print</span>(<span class="str">"Hello, World!"</span>)  <span class="cmt"># 输出到控制台</span></code></pre>
+
+    <div class="note tip"><strong>提示:</strong> Python 使用 <code class="inline">#</code> 表示单行注释;多行注释常用三引号 <code class="inline">"""..."""</code>。缩进推荐使用 4 个空格,同一代码块缩进必须一致。</div>
+  </section>
+
+  <!-- 1. 变量与数据类型 -->
+  <section id="vars">
+    <h2 class="section-title">1. 变量与数据类型</h2>
+    <p>Python 是动态类型语言,变量无需声明类型,直接赋值即可。</p>
+    <pre><code><span class="cmt"># 基本类型</span>
+name    <span class="op">=</span> <span class="str">"Alice"</span>        <span class="cmt"># str  字符串</span>
+age     <span class="op">=</span> <span class="num">25</span>             <span class="cmt"># int  整数</span>
+height  <span class="op">=</span> <span class="num">1.68</span>           <span class="cmt"># float 浮点数</span>
+is_ok   <span class="op">=</span> <span class="kw">True</span>           <span class="cmt"># bool 布尔 (True / False)</span>
+nothing <span class="op">=</span> <span class="kw">None</span>           <span class="cmt"># NoneType 空值</span>
+c       <span class="op">=</span> <span class="num">3</span> <span class="op">+</span> <span class="num">4j</span>          <span class="cmt"># complex 复数</span>
+
+<span class="cmt"># 多重赋值</span>
+x, y, z <span class="op">=</span> <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>
+a <span class="op">=</span> b <span class="op">=</span> c <span class="op">=</span> <span class="num">0</span>
+
+<span class="cmt"># 查看类型 / 类型转换</span>
+<span class="fn">print</span>(<span class="fn">type</span>(age))        <span class="cmt"># &lt;class 'int'&gt;</span>
+num <span class="op">=</span> <span class="fn">int</span>(<span class="str">"42"</span>)          <span class="cmt"># str -&gt; int</span>
+text <span class="op">=</span> <span class="fn">str</span>(<span class="num">3.14</span>)         <span class="cmt"># float -&gt; str</span>
+f <span class="op">=</span> <span class="fn">float</span>(<span class="str">"1.5"</span>)         <span class="cmt"># str -&gt; float</span></code></pre>
+
+    <table>
+      <tr><th>类型</th><th>示例</th><th>说明</th></tr>
+      <tr><td><code>int</code></td><td><code>10, -3, 0xFF</code></td><td>整数,无大小限制</td></tr>
+      <tr><td><code>float</code></td><td><code>3.14, 1e-5</code></td><td>双精度浮点数</td></tr>
+      <tr><td><code>bool</code></td><td><code>True, False</code></td><td>布尔值(int 子类)</td></tr>
+      <tr><td><code>str</code></td><td><code>"hi", 'yo'</code></td><td>不可变文本序列</td></tr>
+      <tr><td><code>NoneType</code></td><td><code>None</code></td><td>表示"无值"</td></tr>
+    </table>
+  </section>
+
+  <!-- 2. 运算符 -->
+  <section id="operators">
+    <h2 class="section-title">2. 运算符</h2>
+    <pre><code><span class="cmt"># 算术运算符</span>
+<span class="num">7</span> <span class="op">+</span> <span class="num">2</span>   <span class="cmt"># 9   加</span>
+<span class="num">7</span> <span class="op">-</span> <span class="num">2</span>   <span class="cmt"># 5   减</span>
+<span class="num">7</span> <span class="op">*</span> <span class="num">2</span>   <span class="cmt"># 14  乘</span>
+<span class="num">7</span> <span class="op">/</span> <span class="num">2</span>   <span class="cmt"># 3.5 除(总是返回 float)</span>
+<span class="num">7</span> <span class="op">//</span> <span class="num">2</span>  <span class="cmt"># 3   整除(向下取整)</span>
+<span class="num">7</span> <span class="op">%</span> <span class="num">2</span>   <span class="cmt"># 1   取余</span>
+<span class="num">7</span> <span class="op">**</span> <span class="num">2</span>  <span class="cmt"># 49  幂</span>
+
+<span class="cmt"># 比较运算符 -&gt; 返回 bool</span>
+a <span class="op">==</span> b   a <span class="op">!=</span> b   a <span class="op">&gt;</span> b   a <span class="op">&lt;=</span> b
+
+<span class="cmt"># 逻辑运算符</span>
+<span class="kw">and</span>   <span class="kw">or</span>   <span class="kw">not</span>
+
+<span class="cmt"># 成员 / 身份运算符</span>
+<span class="num">3</span> <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]        <span class="cmt"># True</span>
+x <span class="kw">is</span> <span class="kw">None</span>              <span class="cmt"># 判断是否为同一对象</span>
+
+<span class="cmt"># 复合赋值 & 海象运算符(3.8+)</span>
+x <span class="op">+=</span> <span class="num">1</span>
+<span class="kw">if</span> (n <span class="op">:=</span> <span class="fn">len</span>(data)) <span class="op">&gt;</span> <span class="num">10</span>:  <span class="cmt"># 赋值同时判断</span>
+    <span class="fn">print</span>(n)</code></pre>
+  </section>
+
+  <!-- 3. 字符串 -->
+  <section id="strings">
+    <h2 class="section-title">3. 字符串</h2>
+    <pre><code>s <span class="op">=</span> <span class="str">"Python"</span>
+
+<span class="cmt"># 索引与切片 [start:stop:step]</span>
+s[<span class="num">0</span>]      <span class="cmt"># 'P'</span>
+s[<span class="op">-</span><span class="num">1</span>]     <span class="cmt"># 'n'  (负索引从末尾开始)</span>
+s[<span class="num">0</span>:<span class="num">3</span>]    <span class="cmt"># 'Pyt'</span>
+s[::<span class="op">-</span><span class="num">1</span>]   <span class="cmt"># 'nohtyP' (反转)</span>
+
+<span class="cmt"># f-string 格式化(推荐,3.6+)</span>
+name, age <span class="op">=</span> <span class="str">"Bob"</span>, <span class="num">30</span>
+<span class="fn">print</span>(<span class="str">f"我叫 {name},今年 {age} 岁"</span>)
+<span class="fn">print</span>(<span class="str">f"{3.14159:.2f}"</span>)   <span class="cmt"># 保留 2 位小数 -&gt; 3.14</span>
+<span class="fn">print</span>(<span class="str">f"{42:>5}"</span>)        <span class="cmt"># 右对齐宽度 5</span>
+
+<span class="cmt"># 常用方法</span>
+s.<span class="fn">upper</span>()          s.<span class="fn">lower</span>()
+s.<span class="fn">strip</span>()          <span class="cmt"># 去除首尾空白</span>
+s.<span class="fn">replace</span>(<span class="str">"P"</span>, <span class="str">"J"</span>)
+s.<span class="fn">split</span>(<span class="str">","</span>)      <span class="cmt"># 按分隔符切分为列表</span>
+<span class="str">"-"</span>.<span class="fn">join</span>([<span class="str">"a"</span>, <span class="str">"b"</span>])   <span class="cmt"># 'a-b'</span>
+s.<span class="fn">startswith</span>(<span class="str">"Py"</span>)   s.<span class="fn">find</span>(<span class="str">"th"</span>)
+
+<span class="cmt"># 多行字符串</span>
+text <span class="op">=</span> <span class="str">"""第一行
+第二行"""</span></code></pre>
+    <div class="note warn"><strong>注意:</strong> 字符串是<strong>不可变</strong>的,任何"修改"方法都会返回新字符串,原字符串不变。</div>
+  </section>
+
+  <!-- 4. 容器类型 -->
+  <section id="collections">
+    <h2 class="section-title">4. 容器类型</h2>
+
+    <h3>列表 List(有序、可变)</h3>
+    <pre><code>nums <span class="op">=</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+nums.<span class="fn">append</span>(<span class="num">4</span>)          <span class="cmt"># 末尾添加 -&gt; [1,2,3,4]</span>
+nums.<span class="fn">insert</span>(<span class="num">0</span>, <span class="num">9</span>)       <span class="cmt"># 指定位置插入</span>
+nums.<span class="fn">pop</span>()             <span class="cmt"># 弹出并返回末尾元素</span>
+nums.<span class="fn">remove</span>(<span class="num">2</span>)         <span class="cmt"># 删除首个值为 2 的元素</span>
+nums.<span class="fn">sort</span>()            <span class="cmt"># 原地排序</span>
+<span class="fn">len</span>(nums)              <span class="cmt"># 长度</span>
+nums[<span class="num">1</span>:<span class="num">3</span>]              <span class="cmt"># 切片同样适用</span></code></pre>
+
+    <h3>元组 Tuple(有序、不可变)</h3>
+    <pre><code>point <span class="op">=</span> (<span class="num">3</span>, <span class="num">4</span>)
+x, y <span class="op">=</span> point          <span class="cmt"># 解包</span>
+single <span class="op">=</span> (<span class="num">42</span>,)         <span class="cmt"># 单元素元组需要逗号</span></code></pre>
+
+    <h3>字典 Dict(键值对,可变)</h3>
+    <pre><code>person <span class="op">=</span> {<span class="str">"name"</span>: <span class="str">"Alice"</span>, <span class="str">"age"</span>: <span class="num">25</span>}
+person[<span class="str">"name"</span>]              <span class="cmt"># 'Alice'</span>
+person.<span class="fn">get</span>(<span class="str">"email"</span>, <span class="str">"无"</span>)   <span class="cmt"># 键不存在返回默认值</span>
+person[<span class="str">"city"</span>] <span class="op">=</span> <span class="str">"北京"</span>       <span class="cmt"># 新增/更新</span>
+person.<span class="fn">keys</span>()   person.<span class="fn">values</span>()   person.<span class="fn">items</span>()
+<span class="kw">for</span> k, v <span class="kw">in</span> person.<span class="fn">items</span>():
+    <span class="fn">print</span>(k, v)</code></pre>
+
+    <h3>集合 Set(无序、不重复)</h3>
+    <pre><code>s <span class="op">=</span> {<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>}     <span class="cmt"># {1, 2, 3} 自动去重</span>
+s.<span class="fn">add</span>(<span class="num">4</span>)
+{<span class="num">1</span>, <span class="num">2</span>} <span class="op">&amp;</span> {<span class="num">2</span>, <span class="num">3</span>}      <span class="cmt"># 交集 {2}</span>
+{<span class="num">1</span>, <span class="num">2</span>} <span class="op">|</span> {<span class="num">2</span>, <span class="num">3</span>}      <span class="cmt"># 并集 {1,2,3}</span>
+{<span class="num">1</span>, <span class="num">2</span>} <span class="op">-</span> {<span class="num">2</span>}         <span class="cmt"># 差集 {1}</span></code></pre>
+
+    <table>
+      <tr><th>类型</th><th>有序</th><th>可变</th><th>可重复</th><th>字面量</th></tr>
+      <tr><td>list</td><td>是</td><td>是</td><td>是</td><td><code>[...]</code></td></tr>
+      <tr><td>tuple</td><td>是</td><td>否</td><td>是</td><td><code>(...)</code></td></tr>
+      <tr><td>dict</td><td>是*</td><td>是</td><td>键唯一</td><td><code>{k:v}</code></td></tr>
+      <tr><td>set</td><td>否</td><td>是</td><td>否</td><td><code>{...}</code></td></tr>
+    </table>
+    <p style="font-size:13px;color:var(--text-mute)">* 3.7+ 起 dict 保持插入顺序</p>
+  </section>
+
+  <!-- 5. 流程控制 -->
+  <section id="control">
+    <h2 class="section-title">5. 流程控制</h2>
+
+    <h3>条件语句</h3>
+    <pre><code>score <span class="op">=</span> <span class="num">85</span>
+<span class="kw">if</span> score <span class="op">&gt;=</span> <span class="num">90</span>:
+    grade <span class="op">=</span> <span class="str">"A"</span>
+<span class="kw">elif</span> score <span class="op">&gt;=</span> <span class="num">80</span>:
+    grade <span class="op">=</span> <span class="str">"B"</span>
+<span class="kw">else</span>:
+    grade <span class="op">=</span> <span class="str">"C"</span>
+
+<span class="cmt"># 三元表达式</span>
+status <span class="op">=</span> <span class="str">"及格"</span> <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="num">60</span> <span class="kw">else</span> <span class="str">"不及格"</span></code></pre>
+
+    <h3>循环</h3>
+    <pre><code><span class="cmt"># for 循环遍历可迭代对象</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):        <span class="cmt"># 0,1,2,3,4</span>
+    <span class="fn">print</span>(i)
+
+<span class="kw">for</span> idx, val <span class="kw">in</span> <span class="fn">enumerate</span>([<span class="str">"a"</span>, <span class="str">"b"</span>]):   <span class="cmt"># 带索引</span>
+    <span class="fn">print</span>(idx, val)
+
+<span class="kw">for</span> a, b <span class="kw">in</span> <span class="fn">zip</span>([<span class="num">1</span>, <span class="num">2</span>], [<span class="str">"x"</span>, <span class="str">"y"</span>]):  <span class="cmt"># 并行遍历</span>
+    <span class="fn">print</span>(a, b)
+
+<span class="cmt"># while 循环</span>
+n <span class="op">=</span> <span class="num">0</span>
+<span class="kw">while</span> n <span class="op">&lt;</span> <span class="num">3</span>:
+    n <span class="op">+=</span> <span class="num">1</span>
+
+<span class="cmt"># break / continue / else</span>
+<span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    <span class="kw">if</span> x <span class="op">==</span> <span class="num">5</span>: <span class="kw">break</span>       <span class="cmt"># 跳出循环</span>
+    <span class="kw">if</span> x <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>: <span class="kw">continue</span>  <span class="cmt"># 跳过本次</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"循环正常结束(未 break)"</span>)</code></pre>
+
+    <h3>match 模式匹配(3.10+)</h3>
+    <pre><code><span class="kw">match</span> command:
+    <span class="kw">case</span> <span class="str">"start"</span>:
+        start()
+    <span class="kw">case</span> <span class="str">"stop"</span> <span class="op">|</span> <span class="str">"halt"</span>:   <span class="cmt"># 多值匹配</span>
+        stop()
+    <span class="kw">case</span> _:                <span class="cmt"># 默认分支</span>
+        <span class="fn">print</span>(<span class="str">"未知命令"</span>)</code></pre>
+  </section>
+
+  <!-- 6. 函数 -->
+  <section id="functions">
+    <h2 class="section-title">6. 函数</h2>
+    <pre><code><span class="cmt"># 定义函数,支持类型注解与默认值</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name: <span class="bi">str</span>, greeting: <span class="bi">str</span> <span class="op">=</span> <span class="str">"你好"</span>) <span class="op">-&gt;</span> <span class="bi">str</span>:
+    <span class="str">"""返回问候语(docstring 文档字符串)"""</span>
+    <span class="kw">return</span> <span class="str">f"{greeting}, {name}!"</span>
+
+greet(<span class="str">"小明"</span>)                   <span class="cmt"># 位置参数</span>
+greet(<span class="str">"小红"</span>, greeting<span class="op">=</span><span class="str">"Hi"</span>)   <span class="cmt"># 关键字参数</span>
+
+<span class="cmt"># *args 收集位置参数, **kwargs 收集关键字参数</span>
+<span class="kw">def</span> <span class="fn">demo</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs):
+    <span class="fn">print</span>(args)     <span class="cmt"># 元组</span>
+    <span class="fn">print</span>(kwargs)   <span class="cmt"># 字典</span>
+
+demo(<span class="num">1</span>, <span class="num">2</span>, x<span class="op">=</span><span class="num">3</span>)          <span class="cmt"># args=(1,2)  kwargs={'x':3}</span>
+
+<span class="cmt"># 返回多个值(实为元组)</span>
+<span class="kw">def</span> <span class="fn">min_max</span>(nums):
+    <span class="kw">return</span> <span class="fn">min</span>(nums), <span class="fn">max</span>(nums)
+lo, hi <span class="op">=</span> min_max([<span class="num">3</span>, <span class="num">1</span>, <span class="num">9</span>])
+
+<span class="cmt"># 匿名函数 lambda</span>
+square <span class="op">=</span> <span class="kw">lambda</span> x: x <span class="op">**</span> <span class="num">2</span>
+<span class="fn">sorted</span>(data, key<span class="op">=</span><span class="kw">lambda</span> p: p[<span class="num">1</span>])</code></pre>
+    <div class="note warn"><strong>陷阱:</strong> 不要用可变对象作为默认参数(如 <code class="inline">def f(x=[])</code>),它只会创建一次并被共享。应使用 <code class="inline">None</code> 作默认值,函数内再初始化。</div>
+  </section>
+
+  <!-- 7. 推导式 -->
+  <section id="comprehension">
+    <h2 class="section-title">7. 推导式 Comprehension</h2>
+    <p>推导式是 Python 特有的简洁语法,用于快速生成列表、字典、集合。</p>
+    <pre><code><span class="cmt"># 列表推导式</span>
+squares <span class="op">=</span> [x <span class="op">**</span> <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>)]        <span class="cmt"># [0,1,4,9,16]</span>
+evens   <span class="op">=</span> [x <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>) <span class="kw">if</span> x <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>]  <span class="cmt"># 带过滤条件</span>
+
+<span class="cmt"># 字典推导式</span>
+sq_map <span class="op">=</span> {x: x <span class="op">**</span> <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">4</span>)}   <span class="cmt"># {0:0, 1:1, 2:4, 3:9}</span>
+
+<span class="cmt"># 集合推导式</span>
+unique <span class="op">=</span> {c <span class="kw">for</span> c <span class="kw">in</span> <span class="str">"hello"</span>}            <span class="cmt"># {'h','e','l','o'}</span>
+
+<span class="cmt"># 生成器表达式(惰性求值,省内存)</span>
+gen <span class="op">=</span> (x <span class="op">**</span> <span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1000000</span>))
+<span class="fn">sum</span>(gen)</code></pre>
+  </section>
+
+  <!-- 8. 面向对象 -->
+  <section id="oop">
+    <h2 class="section-title">8. 面向对象 OOP</h2>
+    <pre><code><span class="kw">class</span> <span class="fn">Animal</span>:
+    <span class="cmt"># 类属性(所有实例共享)</span>
+    kingdom <span class="op">=</span> <span class="str">"动物界"</span>
+
+    <span class="cmt"># 构造方法</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="self">self</span>, name, sound):
+        <span class="self">self</span>.name <span class="op">=</span> name       <span class="cmt"># 实例属性</span>
+        <span class="self">self</span>.sound <span class="op">=</span> sound
+
+    <span class="cmt"># 实例方法</span>
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="self">self</span>):
+        <span class="kw">return</span> <span class="str">f"{self.name} 发出 {self.sound}"</span>
+
+    <span class="cmt"># 特殊方法:定义 print 时的显示</span>
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="self">self</span>):
+        <span class="kw">return</span> <span class="str">f"Animal({self.name})"</span>
+
+<span class="cmt"># 继承</span>
+<span class="kw">class</span> <span class="fn">Dog</span>(<span class="fn">Animal</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="self">self</span>, name):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(name, <span class="str">"汪汪"</span>)   <span class="cmt"># 调用父类构造</span>
+
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="self">self</span>):                 <span class="cmt"># 方法重写</span>
+        <span class="kw">return</span> <span class="str">f"{self.name}: 汪!"</span>
+
+d <span class="op">=</span> Dog(<span class="str">"旺财"</span>)
+<span class="fn">print</span>(d.speak())        <span class="cmt"># 旺财: 汪!</span>
+<span class="fn">print</span>(<span class="fn">isinstance</span>(d, Animal))  <span class="cmt"># True</span></code></pre>
+
+    <table>
+      <tr><th>特殊方法</th><th>触发时机</th></tr>
+      <tr><td><code>__init__</code></td><td>创建实例时</td></tr>
+      <tr><td><code>__str__</code></td><td><code>str()</code> / <code>print()</code></td></tr>
+      <tr><td><code>__repr__</code></td><td>调试显示 / 交互式回显</td></tr>
+      <tr><td><code>__len__</code></td><td><code>len(obj)</code></td></tr>
+      <tr><td><code>__eq__</code></td><td><code>==</code> 比较</td></tr>
+    </table>
+
+    <h3>常用装饰器</h3>
+    <pre><code><span class="kw">class</span> <span class="fn">Circle</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="self">self</span>, r):
+        <span class="self">self</span>._r <span class="op">=</span> r
+
+    <span class="op">@property</span>            <span class="cmt"># 把方法变成属性访问</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="self">self</span>):
+        <span class="kw">return</span> <span class="num">3.14</span> <span class="op">*</span> <span class="self">self</span>._r <span class="op">**</span> <span class="num">2</span>
+
+    <span class="op">@staticmethod</span>        <span class="cmt"># 静态方法,不接收 self</span>
+    <span class="kw">def</span> <span class="fn">info</span>():
+        <span class="kw">return</span> <span class="str">"这是一个圆"</span>
+
+c <span class="op">=</span> Circle(<span class="num">5</span>)
+<span class="fn">print</span>(c.area)   <span class="cmt"># 78.5  (无需括号)</span></code></pre>
+  </section>
+
+  <!-- 9. 异常处理 -->
+  <section id="exception">
+    <h2 class="section-title">9. 异常处理</h2>
+    <pre><code><span class="kw">try</span>:
+    result <span class="op">=</span> <span class="num">10</span> <span class="op">/</span> <span class="num">0</span>
+<span class="kw">except</span> ZeroDivisionError <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"除零错误: {e}"</span>)
+<span class="kw">except</span> (ValueError, TypeError):   <span class="cmt"># 捕获多种异常</span>
+    <span class="fn">print</span>(<span class="str">"值或类型错误"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"没有异常才执行"</span>)
+<span class="kw">finally</span>:
+    <span class="fn">print</span>(<span class="str">"无论如何都执行(常用于清理)"</span>)
+
+<span class="cmt"># 主动抛出异常</span>
+<span class="kw">def</span> <span class="fn">set_age</span>(age):
+    <span class="kw">if</span> age <span class="op">&lt;</span> <span class="num">0</span>:
+        <span class="kw">raise</span> ValueError(<span class="str">"年龄不能为负"</span>)
+
+<span class="cmt"># 自定义异常</span>
+<span class="kw">class</span> <span class="fn">MyError</span>(<span class="fn">Exception</span>):
+    <span class="kw">pass</span></code></pre>
+    <div class="note tip"><strong>建议:</strong> 只捕获你能处理的具体异常类型,避免裸 <code class="inline">except:</code> 吞掉所有错误(包括 <code class="inline">KeyboardInterrupt</code>)。</div>
+  </section>
+
+  <!-- 10. 模块与包 -->
+  <section id="modules">
+    <h2 class="section-title">10. 模块与包</h2>
+    <pre><code><span class="cmt"># 导入整个模块</span>
+<span class="kw">import</span> math
+math.sqrt(<span class="num">16</span>)                <span class="cmt"># 4.0</span>
+
+<span class="cmt"># 导入特定成员</span>
+<span class="kw">from</span> math <span class="kw">import</span> pi, sqrt
+<span class="fn">print</span>(pi)
+
+<span class="cmt"># 起别名</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime <span class="kw">as</span> dt
+
+<span class="cmt"># __main__ 惯用法:仅在直接运行时执行</span>
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="fn">print</span>(<span class="str">"运行主程序"</span>)
+
+<span class="kw">if</span> __name__ <span class="op">==</span> <span class="str">"__main__"</span>:
+    main()</code></pre>
+    <div class="note"><strong>包管理:</strong> 使用 <code class="inline">pip install 包名</code> 安装第三方库;推荐用 <code class="inline">python -m venv venv</code> 创建虚拟环境隔离依赖。</div>
+  </section>
+
+  <!-- 11. 文件操作 -->
+  <section id="files">
+    <h2 class="section-title">11. 文件操作</h2>
+    <pre><code><span class="cmt"># 推荐使用 with,自动关闭文件</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>, <span class="str">"r"</span>, encoding<span class="op">=</span><span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    content <span class="op">=</span> f.<span class="fn">read</span>()          <span class="cmt"># 读全部</span>
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"data.txt"</span>, encoding<span class="op">=</span><span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> line <span class="kw">in</span> f:           <span class="cmt"># 逐行读取(省内存)</span>
+        <span class="fn">print</span>(line.<span class="fn">strip</span>())
+
+<span class="cmt"># 写入文件</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"out.txt"</span>, <span class="str">"w"</span>, encoding<span class="op">=</span><span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="str">"第一行\n"</span>)
+    f.<span class="fn">writelines</span>([<span class="str">"a\n"</span>, <span class="str">"b\n"</span>])</code></pre>
+    <table>
+      <tr><th>模式</th><th>含义</th></tr>
+      <tr><td><code>"r"</code></td><td>只读(默认)</td></tr>
+      <tr><td><code>"w"</code></td><td>写入(覆盖原内容)</td></tr>
+      <tr><td><code>"a"</code></td><td>追加</td></tr>
+      <tr><td><code>"x"</code></td><td>创建新文件,已存在则报错</td></tr>
+      <tr><td><code>"b"</code></td><td>二进制模式(如 <code>"rb"</code>)</td></tr>
+    </table>
+  </section>
+
+  <!-- 12. 进阶特性 -->
+  <section id="advanced">
+    <h2 class="section-title">12. 进阶特性</h2>
+
+    <h3>装饰器 Decorator</h3>
+    <pre><code><span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">timer</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs):
+        start <span class="op">=</span> time.time()
+        result <span class="op">=</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)
+        <span class="fn">print</span>(<span class="str">f"耗时 {time.time() - start:.4f}s"</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="op">@timer</span>                    <span class="cmt"># 等价于 slow = timer(slow)</span>
+<span class="kw">def</span> <span class="fn">slow</span>():
+    time.sleep(<span class="num">1</span>)</code></pre>
+
+    <h3>生成器 Generator</h3>
+    <pre><code><span class="kw">def</span> <span class="fn">countdown</span>(n):
+    <span class="kw">while</span> n <span class="op">&gt;</span> <span class="num">0</span>:
+        <span class="kw">yield</span> n         <span class="cmt"># yield 暂停并返回值,惰性生成</span>
+        n <span class="op">-=</span> <span class="num">1</span>
+
+<span class="kw">for</span> x <span class="kw">in</span> countdown(<span class="num">3</span>):   <span class="cmt"># 3, 2, 1</span>
+    <span class="fn">print</span>(x)</code></pre>
+
+    <h3>上下文管理器</h3>
+    <pre><code><span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="op">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">managed</span>():
+    <span class="fn">print</span>(<span class="str">"进入"</span>)
+    <span class="kw">yield</span> <span class="str">"资源"</span>
+    <span class="fn">print</span>(<span class="str">"退出"</span>)
+
+<span class="kw">with</span> managed() <span class="kw">as</span> r:
+    <span class="fn">print</span>(r)</code></pre>
+
+    <h3>类型注解 Type Hints</h3>
+    <pre><code><span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">def</span> <span class="fn">find</span>(items: <span class="bi">list</span>[<span class="bi">int</span>], target: <span class="bi">int</span>) <span class="op">-&gt;</span> Optional[<span class="bi">int</span>]:
+    <span class="kw">for</span> i, v <span class="kw">in</span> <span class="fn">enumerate</span>(items):
+        <span class="kw">if</span> v <span class="op">==</span> target:
+            <span class="kw">return</span> i
+    <span class="kw">return</span> <span class="kw">None</span></code></pre>
+    <div class="note tip"><strong>提示:</strong> 类型注解只是提示,运行时不强制检查。配合 <code class="inline">mypy</code> 等工具可做静态类型检查。</div>
+  </section>
+
+  <!-- 13. 标准库 -->
+  <section id="stdlib">
+    <h2 class="section-title">13. 常用标准库</h2>
+    <table>
+      <tr><th>模块</th><th>用途</th></tr>
+      <tr><td><code>os / pathlib</code></td><td>文件路径与系统操作</td></tr>
+      <tr><td><code>sys</code></td><td>解释器与命令行参数</td></tr>
+      <tr><td><code>math / random</code></td><td>数学运算与随机数</td></tr>
+      <tr><td><code>datetime</code></td><td>日期与时间处理</td></tr>
+      <tr><td><code>json</code></td><td>JSON 序列化/反序列化</td></tr>
+      <tr><td><code>re</code></td><td>正则表达式</td></tr>
+      <tr><td><code>collections</code></td><td>Counter、defaultdict 等</td></tr>
+      <tr><td><code>itertools</code></td><td>高效迭代器工具</td></tr>
+    </table>
+    <pre><code><span class="kw">import</span> json, random
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="cmt"># JSON</span>
+data <span class="op">=</span> json.<span class="fn">loads</span>(<span class="str">'{"a": 1}'</span>)       <span class="cmt"># str -&gt; dict</span>
+text <span class="op">=</span> json.<span class="fn">dumps</span>(data, ensure_ascii<span class="op">=</span><span class="kw">False</span>)
+
+<span class="cmt"># 统计词频</span>
+Counter(<span class="str">"banana"</span>)                 <span class="cmt"># {'a':3, 'n':2, 'b':1}</span>
+
+<span class="cmt"># 随机</span>
+random.<span class="fn">randint</span>(<span class="num">1</span>, <span class="num">6</span>)              <span class="cmt"># 掷骰子</span>
+random.<span class="fn">choice</span>([<span class="str">"A"</span>, <span class="str">"B"</span>, <span class="str">"C"</span>])
+
+<span class="cmt"># 路径操作</span>
+p <span class="op">=</span> Path(<span class="str">"data"</span>) <span class="op">/</span> <span class="str">"file.txt"</span>
+p.<span class="fn">exists</span>()   p.<span class="fn">suffix</span>   p.<span class="fn">read_text</span>()</code></pre>
+  </section>
+
+  <!-- 14. 技巧 -->
+  <section id="tips">
+    <h2 class="section-title">14. 实用技巧</h2>
+    <pre><code><span class="cmt"># 交换变量,无需临时变量</span>
+a, b <span class="op">=</span> b, a
+
+<span class="cmt"># 列表去重并保持顺序</span>
+<span class="fn">list</span>(<span class="fn">dict</span>.fromkeys(items))
+
+<span class="cmt"># 合并字典(3.9+)</span>
+merged <span class="op">=</span> dict1 <span class="op">|</span> dict2
+
+<span class="cmt"># 链式比较</span>
+<span class="kw">if</span> <span class="num">0</span> <span class="op">&lt;</span> x <span class="op">&lt;</span> <span class="num">10</span>:
+    ...
+
+<span class="cmt"># 用 enumerate 从 1 开始计数</span>
+<span class="kw">for</span> i, v <span class="kw">in</span> <span class="fn">enumerate</span>(items, start<span class="op">=</span><span class="num">1</span>):
+    ...
+
+<span class="cmt"># 一行读取所有行并去空白</span>
+lines <span class="op">=</span> [l.<span class="fn">strip</span>() <span class="kw">for</span> l <span class="kw">in</span> <span class="fn">open</span>(<span class="str">"f.txt"</span>)]
+
+<span class="cmt"># 三元 + all/any</span>
+<span class="fn">all</span>([<span class="kw">True</span>, <span class="kw">True</span>])   <span class="cmt"># 全为真</span>
+<span class="fn">any</span>([<span class="kw">False</span>, <span class="kw">True</span>])  <span class="cmt"># 任一为真</span>
+
+<span class="cmt"># 格式化数字千分位</span>
+<span class="fn">print</span>(<span class="str">f"{1234567:,}"</span>)   <span class="cmt"># 1,234,567</span></code></pre>
+
+    <div class="note tip"><strong>学习建议:</strong> 语法只是工具,真正掌握 Python 需要多写代码。建议边读本资料边在解释器里动手敲一遍每个示例,遇到不懂的用 <code class="inline">help(对象)</code> 或 <code class="inline">dir(对象)</code> 查看。祝学习愉快!</div>
+  </section>
+</main>
+
+<a href="#" id="top-btn" title="回到顶部">↑</a>
+
+<script>
+  // 回到顶部按钮
+  const btn = document.getElementById('top-btn');
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 400);
+  });
+
+  // 侧边栏当前章节高亮
+  const links = document.querySelectorAll('#sidebar a');
+  const sections = [...document.querySelectorAll('section')];
+  window.addEventListener('scroll', () => {
+    let current = sections[0]?.id;
+    for (const s of sections) {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    }
+    links.forEach(a => {
+      a.style.background = a.getAttribute('href') === '#' + current ? 'var(--bg-elev)' : '';
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>

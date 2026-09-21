@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML 语法详细学习资料</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1e40af;
+      --bg: #f8fafc;
+      --code-bg: #1e293b;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+    }
+    /* 布局 */
+    .layout { display: flex; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      width: 260px;
+      height: 100vh;
+      overflow-y: auto;
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 24px 16px;
+      flex-shrink: 0;
+    }
+    nav.toc h2 { font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
+    nav.toc a {
+      display: block;
+      padding: 5px 10px;
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    nav.toc a:hover { background: var(--bg); color: var(--primary); }
+    main {
+      flex: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 48px 120px;
+    }
+    /* 标题 */
+    header.hero {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      padding: 48px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+    header.hero h1 { margin: 0 0 8px; font-size: 34px; }
+    header.hero p { margin: 0; opacity: 0.9; font-size: 16px; }
+    section { margin-bottom: 48px; scroll-margin-top: 20px; }
+    h2.title {
+      font-size: 26px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 8px;
+      margin-top: 0;
+    }
+    h3 { font-size: 20px; color: var(--primary-dark); margin-top: 32px; }
+    p { margin: 12px 0; }
+    /* 代码块 */
+    pre {
+      background: var(--code-bg);
+      color: #e2e8f0;
+      padding: 18px 20px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    code {
+      font-family: "SF Mono", Consolas, Monaco, monospace;
+    }
+    p code, li code, td code {
+      background: #e0e7ff;
+      color: var(--primary-dark);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    /* 示例效果框 */
+    .demo {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+    .demo-label {
+      background: #f1f5f9;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+    .demo-body { padding: 20px; background: #fff; }
+    /* 表格 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th { background: #f1f5f9; }
+    tr:nth-child(even) { background: #f8fafc; }
+    /* 提示框 */
+    .tip, .warn {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .tip { background: #ecfdf5; border-left: 4px solid #10b981; }
+    .warn { background: #fef2f2; border-left: 4px solid #ef4444; }
+    .tip strong, .warn strong { display: block; margin-bottom: 4px; }
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 40px;
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 768px) {
+      nav.toc { display: none; }
+      main { padding: 20px; }
+      header.hero { padding: 28px; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- 侧边导航目录 -->
+  <nav class="toc">
+    <h2>目录</h2>
+    <a href="#intro">1. HTML 是什么</a>
+    <a href="#structure">2. 文档基本结构</a>
+    <a href="#elements">3. 元素、标签与属性</a>
+    <a href="#text">4. 文本相关标签</a>
+    <a href="#list">5. 列表</a>
+    <a href="#link-img">6. 链接与图片</a>
+    <a href="#table">7. 表格</a>
+    <a href="#form">8. 表单与输入</a>
+    <a href="#semantic">9. 语义化布局标签</a>
+    <a href="#media">10. 多媒体与嵌入</a>
+    <a href="#meta">11. 常用元信息与 SEO</a>
+    <a href="#entity">12. 特殊字符实体</a>
+    <a href="#practice">13. 完整实战示例</a>
+    <a href="#tips">14. 良好实践建议</a>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <h1>HTML 语法详细学习资料</h1>
+      <p>从零开始系统学习 HTML5 —— 含语法讲解、代码示例与实时效果展示</p>
+    </header>
+
+    <!-- 1 -->
+    <section id="intro">
+      <h2 class="title">1. HTML 是什么</h2>
+      <p><strong>HTML</strong>（HyperText Markup Language，超文本标记语言）是构建网页的基础语言。它不是编程语言,而是一种<strong>标记语言</strong>:用一系列“标签”来描述网页内容的结构和含义。</p>
+      <ul>
+        <li><strong>HTML</strong> 负责网页的<strong>结构</strong>(内容是什么)</li>
+        <li><strong>CSS</strong> 负责网页的<strong>样式</strong>(长什么样)</li>
+        <li><strong>JavaScript</strong> 负责网页的<strong>行为</strong>(能做什么)</li>
+      </ul>
+      <div class="tip">
+        <strong>如何运行?</strong>
+        把代码保存为 <code>.html</code> 文件,然后用浏览器打开即可。本资料本身就是一个 HTML 文件。
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section id="structure">
+      <h2 class="title">2. 文档基本结构</h2>
+      <p>一个标准的 HTML 文档由以下几部分组成:</p>
+      <pre><code>&lt;!DOCTYPE html&gt;              &lt;!-- 声明文档类型为 HTML5 --&gt;
+&lt;html lang="zh-CN"&gt;          &lt;!-- 根元素,lang 指定语言 --&gt;
+  &lt;head&gt;                     &lt;!-- 头部:元信息,不直接显示 --&gt;
+    &lt;meta charset="UTF-8"&gt;   &lt;!-- 字符编码,防止乱码 --&gt;
+    &lt;title&gt;网页标题&lt;/title&gt;   &lt;!-- 浏览器标签页显示的标题 --&gt;
+  &lt;/head&gt;
+  &lt;body&gt;                     &lt;!-- 主体:页面可见内容 --&gt;
+    &lt;h1&gt;你好,世界!&lt;/h1&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <table>
+        <tr><th>部分</th><th>作用</th></tr>
+        <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>告诉浏览器这是 HTML5 文档,必须放在第一行</td></tr>
+        <tr><td><code>&lt;html&gt;</code></td><td>整个文档的根元素,包裹所有内容</td></tr>
+        <tr><td><code>&lt;head&gt;</code></td><td>存放元信息:编码、标题、样式、脚本引用等</td></tr>
+        <tr><td><code>&lt;body&gt;</code></td><td>存放页面上真正显示给用户看的内容</td></tr>
+      </table>
+    </section>
+
+    <!-- 3 -->
+    <section id="elements">
+      <h2 class="title">3. 元素、标签与属性</h2>
+      <h3>元素与标签</h3>
+      <p>大多数元素由<strong>开始标签</strong>、<strong>内容</strong>和<strong>结束标签</strong>组成:</p>
+      <pre><code>&lt;p&gt;这是一段文字&lt;/p&gt;
+ ↑开始标签   内容   ↑结束标签</code></pre>
+      <p>部分元素没有内容,称为<strong>空元素</strong>(自闭合),例如换行 <code>&lt;br&gt;</code>、水平线 <code>&lt;hr&gt;</code>、图片 <code>&lt;img&gt;</code>。</p>
+
+      <h3>属性</h3>
+      <p>属性写在开始标签内,用来提供额外信息,格式为 <code>属性名="属性值"</code>:</p>
+      <pre><code>&lt;a href="https://example.com" target="_blank"&gt;链接&lt;/a&gt;
+     ↑属性名   ↑属性值            ↑另一个属性</code></pre>
+      <table>
+        <tr><th>通用属性</th><th>说明</th></tr>
+        <tr><td><code>id</code></td><td>元素的唯一标识,整个页面不可重复</td></tr>
+        <tr><td><code>class</code></td><td>元素的类名,用于 CSS 选择,可重复、可多个</td></tr>
+        <tr><td><code>style</code></td><td>内联样式</td></tr>
+        <tr><td><code>title</code></td><td>鼠标悬停时的提示文字</td></tr>
+      </table>
+    </section>
+
+    <!-- 4 -->
+    <section id="text">
+      <h2 class="title">4. 文本相关标签</h2>
+      <h3>标题 h1 ~ h6</h3>
+      <pre><code>&lt;h1&gt;一级标题&lt;/h1&gt;
+&lt;h2&gt;二级标题&lt;/h2&gt;
+&lt;h6&gt;六级标题&lt;/h6&gt;</code></pre>
+      <div class="warn">
+        <strong>注意</strong>
+        一个页面通常只用一个 <code>&lt;h1&gt;</code>,标题要按层级顺序使用,不要为了字体大小随意跳级。
+      </div>
+
+      <h3>段落与文本格式</h3>
+      <pre><code>&lt;p&gt;这是段落&lt;/p&gt;
+&lt;strong&gt;重要(加粗)&lt;/strong&gt;
+&lt;em&gt;强调(斜体)&lt;/em&gt;
+&lt;mark&gt;高亮&lt;/mark&gt;
+&lt;br&gt; &lt;!-- 换行 --&gt;
+&lt;hr&gt; &lt;!-- 分隔线 --&gt;</code></pre>
+      <div class="demo">
+        <div class="demo-label">实时效果</div>
+        <div class="demo-body">
+          <p>这是一个普通段落。<strong>这是加粗的重要内容</strong>,<em>这是强调的斜体</em>,<mark>这是高亮文字</mark>。</p>
+          <hr>
+          <p>上面是一条分隔线。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="list">
+      <h2 class="title">5. 列表</h2>
+      <h3>无序列表 &amp; 有序列表</h3>
+      <pre><code>&lt;ul&gt;                    &lt;ol&gt;
+  &lt;li&gt;苹果&lt;/li&gt;            &lt;li&gt;第一步&lt;/li&gt;
+  &lt;li&gt;香蕉&lt;/li&gt;            &lt;li&gt;第二步&lt;/li&gt;
+&lt;/ul&gt;                   &lt;/ol&gt;</code></pre>
+      <div class="demo">
+        <div class="demo-label">实时效果</div>
+        <div class="demo-body">
+          <ul><li>苹果</li><li>香蕉</li></ul>
+          <ol><li>第一步</li><li>第二步</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="link-img">
+      <h2 class="title">6. 链接与图片</h2>
+      <h3>超链接 a</h3>
+      <pre><code>&lt;a href="https://example.com"&gt;外部链接&lt;/a&gt;
+&lt;a href="#intro"&gt;页面内锚点&lt;/a&gt;
+&lt;a href="mailto:me@qq.com"&gt;发邮件&lt;/a&gt;
+&lt;a href="page.html" target="_blank"&gt;新窗口打开&lt;/a&gt;</code></pre>
+
+      <h3>图片 img</h3>
+      <pre><code>&lt;img src="photo.jpg" alt="图片描述" width="200"&gt;</code></pre>
+      <div class="tip">
+        <strong>alt 很重要</strong>
+        <code>alt</code> 是图片加载失败或屏幕阅读器读取时的替代文字,有利于无障碍访问和 SEO。
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="table">
+      <h2 class="title">7. 表格</h2>
+      <pre><code>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;姓名&lt;/th&gt;&lt;th&gt;年龄&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;小明&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+      <div class="demo">
+        <div class="demo-label">实时效果</div>
+        <div class="demo-body">
+          <table>
+            <thead><tr><th>姓名</th><th>年龄</th><th>城市</th></tr></thead>
+            <tbody>
+              <tr><td>小明</td><td>18</td><td>北京</td></tr>
+              <tr><td>小红</td><td>20</td><td>上海</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p>常用标签:<code>table</code> 表格、<code>tr</code> 行、<code>th</code> 表头单元格、<code>td</code> 普通单元格。合并单元格用 <code>colspan</code>(跨列)、<code>rowspan</code>(跨行)。</p>
+    </section>
+
+    <!-- 8 -->
+    <section id="form">
+      <h2 class="title">8. 表单与输入</h2>
+      <pre><code>&lt;form action="/submit" method="post"&gt;
+  &lt;label&gt;用户名: &lt;input type="text" name="user"&gt;&lt;/label&gt;
+  &lt;input type="password" name="pwd" placeholder="密码"&gt;
+  &lt;input type="email" name="email"&gt;
+  &lt;input type="checkbox" name="agree"&gt; 同意协议
+  &lt;input type="radio" name="sex" value="男"&gt; 男
+  &lt;textarea rows="3"&gt;多行文本&lt;/textarea&gt;
+  &lt;select&gt;
+    &lt;option&gt;选项一&lt;/option&gt;
+    &lt;option&gt;选项二&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;button type="submit"&gt;提交&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      <div class="demo">
+        <div class="demo-label">实时效果</div>
+        <div class="demo-body">
+          <form onsubmit="return false;">
+            <p><label>用户名: <input type="text" placeholder="请输入"></label></p>
+            <p><input type="password" placeholder="密码"></p>
+            <p><label><input type="checkbox"> 同意协议</label></p>
+            <p>
+              <label><input type="radio" name="sex"> 男</label>
+              <label><input type="radio" name="sex"> 女</label>
+            </p>
+            <p><select><option>选项一</option><option>选项二</option></select></p>
+            <p><button type="submit">提交</button></p>
+          </form>
+        </div>
+      </div>
+      <table>
+        <tr><th>type 类型</th><th>用途</th></tr>
+        <tr><td><code>text</code></td><td>单行文本</td></tr>
+        <tr><td><code>password</code></td><td>密码(隐藏输入)</td></tr>
+        <tr><td><code>email / number / date</code></td><td>邮箱 / 数字 / 日期,自带校验</td></tr>
+        <tr><td><code>checkbox / radio</code></td><td>多选框 / 单选框</td></tr>
+        <tr><td><code>file</code></td><td>文件上传</td></tr>
+      </table>
+    </section>
+
+    <!-- 9 -->
+    <section id="semantic">
+      <h2 class="title">9. 语义化布局标签</h2>
+      <p>HTML5 提供了语义化标签,让代码结构更清晰,也利于 SEO 和无障碍访问:</p>
+      <pre><code>&lt;header&gt;页眉/顶部导航&lt;/header&gt;
+&lt;nav&gt;导航链接&lt;/nav&gt;
+&lt;main&gt;主要内容&lt;/main&gt;
+&lt;article&gt;独立文章&lt;/article&gt;
+&lt;section&gt;章节区块&lt;/section&gt;
+&lt;aside&gt;侧边栏&lt;/aside&gt;
+&lt;footer&gt;页脚&lt;/footer&gt;</code></pre>
+      <div class="tip">
+        <strong>div vs 语义标签</strong>
+        <code>&lt;div&gt;</code> 和 <code>&lt;span&gt;</code> 是无语义的通用容器。能用语义标签时优先用语义标签,实在没有合适的再用 <code>div</code>。
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="media">
+      <h2 class="title">10. 多媒体与嵌入</h2>
+      <pre><code>&lt;audio src="music.mp3" controls&gt;&lt;/audio&gt;
+
+&lt;video src="movie.mp4" controls width="400"&gt;&lt;/video&gt;
+
+&lt;iframe src="https://example.com" width="100%" height="300"&gt;&lt;/iframe&gt;</code></pre>
+      <p><code>controls</code> 属性会显示播放控件。<code>iframe</code> 用于在页面中嵌入另一个网页。</p>
+    </section>
+
+    <!-- 11 -->
+    <section id="meta">
+      <h2 class="title">11. 常用元信息与 SEO</h2>
+      <pre><code>&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+&lt;meta name="description" content="网页描述,搜索结果会显示"&gt;
+&lt;meta name="keywords" content="关键词1,关键词2"&gt;
+&lt;link rel="stylesheet" href="style.css"&gt;
+&lt;link rel="icon" href="favicon.ico"&gt;</code></pre>
+      <p>其中 <code>viewport</code> 那行对<strong>移动端适配</strong>至关重要,几乎每个页面都要加。</p>
+    </section>
+
+    <!-- 12 -->
+    <section id="entity">
+      <h2 class="title">12. 特殊字符实体</h2>
+      <p>某些字符在 HTML 中有特殊含义(如 <code>&lt;</code> <code>&gt;</code>),需要用实体代替:</p>
+      <table>
+        <tr><th>字符</th><th>实体写法</th><th>说明</th></tr>
+        <tr><td>&lt;</td><td><code>&amp;lt;</code></td><td>小于号</td></tr>
+        <tr><td>&gt;</td><td><code>&amp;gt;</code></td><td>大于号</td></tr>
+        <tr><td>&amp;</td><td><code>&amp;amp;</code></td><td>与符号</td></tr>
+        <tr><td>空格</td><td><code>&amp;nbsp;</code></td><td>不换行空格</td></tr>
+        <tr><td>"</td><td><code>&amp;quot;</code></td><td>双引号</td></tr>
+        <tr><td>©</td><td><code>&amp;copy;</code></td><td>版权符号</td></tr>
+      </table>
+    </section>
+
+    <!-- 13 -->
+    <section id="practice">
+      <h2 class="title">13. 完整实战示例</h2>
+      <p>下面是一个包含常见结构的完整页面,你可以复制到新文件中运行:</p>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;我的第一个网页&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;header&gt;
+    &lt;h1&gt;我的博客&lt;/h1&gt;
+    &lt;nav&gt;
+      &lt;a href="#"&gt;首页&lt;/a&gt; |
+      &lt;a href="#"&gt;关于&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;main&gt;
+    &lt;article&gt;
+      &lt;h2&gt;第一篇文章&lt;/h2&gt;
+      &lt;p&gt;这是文章正文,包含&lt;strong&gt;重点&lt;/strong&gt;内容。&lt;/p&gt;
+      &lt;img src="cover.jpg" alt="封面图"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;要点一&lt;/li&gt;
+        &lt;li&gt;要点二&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/article&gt;
+  &lt;/main&gt;
+
+  &lt;footer&gt;
+    &lt;p&gt;&amp;copy; 2026 我的博客&lt;/p&gt;
+  &lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <!-- 14 -->
+    <section id="tips">
+      <h2 class="title">14. 良好实践建议</h2>
+      <ul>
+        <li>始终写 <code>&lt;!DOCTYPE html&gt;</code> 和 <code>&lt;meta charset="UTF-8"&gt;</code></li>
+        <li>标签名和属性名统一使用<strong>小写</strong></li>
+        <li>属性值用<strong>双引号</strong>包裹</li>
+        <li>正确嵌套标签,不要交叉:<code>&lt;p&gt;&lt;strong&gt;对&lt;/strong&gt;&lt;/p&gt;</code></li>
+        <li>图片一定加 <code>alt</code>,表单控件配 <code>&lt;label&gt;</code></li>
+        <li>优先用<strong>语义化标签</strong>,让机器和人都读得懂</li>
+        <li>保持代码<strong>缩进</strong>整齐,便于阅读维护</li>
+        <li>结构(HTML)、样式(CSS)、行为(JS)分离</li>
+      </ul>
+      <div class="tip">
+        <strong>下一步学什么?</strong>
+        掌握 HTML 后,建议学习 <strong>CSS</strong>(美化页面)和 <strong>JavaScript</strong>(交互功能),三者结合就能做出真正的网站。
+      </div>
+    </section>
+
+    <footer>
+      <p>HTML 语法学习资料 · 祝你学习愉快 🎉</p>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

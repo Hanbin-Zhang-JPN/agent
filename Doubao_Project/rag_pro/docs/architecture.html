@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--
+  rag_pro 架构总览图（自包含 HTML/SVG，可离线打开）
+  说明：本图用于帮助理解 rag_pro 项目的整体链路与模块对应关系，
+        内容与 README.md 一致，全部为确定性绘制（SVG + 少量 CSS），
+        不依赖任何外部库，断开网络也可正常查看。
+-->
+<html lang="zh-CN" style="margin:0;padding:0;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rag_pro RAG 架构总览</title>
+<style>
+  /* 基础样式：干净、留白充足、中文友好 */
+  body { margin:0; padding:24px; font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+         background:#f6f8fb; color:#1f2933; line-height:1.6; }
+  .wrap { max-width:880px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 4px; color:#111827; }
+  .sub { font-size:14px; color:#6b7280; margin:0 0 20px; }
+  .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px;
+          padding:14px 16px; margin:0 0 12px; }
+  .stage { display:flex; align-items:flex-start; gap:12px; }
+  .num { flex:0 0 34px; height:34px; border-radius:50%; background:#2563eb; color:#fff;
+         display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; }
+  .body { flex:1; min-width:0; }
+  .name { font-size:16px; font-weight:700; margin:0; }
+  .mod { display:inline-block; margin:4px 6px 0 0; padding:2px 8px; border-radius:6px;
+         background:#eef2ff; color:#4338ca; font-size:12px; font-family:Menlo,monospace; }
+  .desc { font-size:13px; color:#4b5563; margin:4px 0 0; }
+  .arrow { width:2px; height:18px; background:#cbd5e1; margin:0 0 0 17px; }
+  .legend { font-size:12px; color:#6b7280; margin-top:16px; text-align:center; }
+  .legend b { color:#2563eb; }
+  /* 移动端：更紧凑但不挤压 */
+  @media (max-width:600px){ body{padding:14px;} .name{font-size:15px;} .num{flex-basis:30px;height:30px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>rag_pro —— RAG 链路架构总览</h1>
+  <p class="sub">从「文档入库」到「答案生成」共 6 个环节，右侧标注对应源码模块；全部用 Python 标准库实现，每行中文注释。</p>
+
+  <!-- 环节0：入库 -->
+  <div class="card stage">
+    <div class="num">0</div>
+    <div class="body">
+      <p class="name">文档入库</p>
+      <span class="mod">ingest.py</span><span class="mod">reader.py</span><span class="mod">chunker.py</span><span class="mod">bm25.py</span><span class="mod">embedder.py</span>
+      <p class="desc">扫描目录 → 读取 txt/md/docx/pdf → 智能切块（段落+句子边界+重叠）→ 建立 BM25 倒排索引 → 向量化并写入向量库 → 持久化到 store/。读取与切块用线程池并行。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节1：查询处理 -->
+  <div class="card stage">
+    <div class="num">1</div>
+    <div class="body">
+      <p class="name">查询处理</p>
+      <span class="mod">query.py</span>
+      <p class="desc">可选：大模型把口语改写为规范问法（失败自动回退）；再用语料共现词做离线扩展，提升"说法不同但意思相同"的召回。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节2：混合检索 -->
+  <div class="card stage">
+    <div class="num">2</div>
+    <div class="body">
+      <p class="name">混合检索（双路召回 + RRF 融合）</p>
+      <span class="mod">retriever.py</span><span class="mod">bm25.py</span><span class="mod">vectorstore.py</span><span class="mod">embedder.py</span>
+      <p class="desc">BM25 关键词路（精确术语/稀有词）+ 向量语义路（同义词/上下文），两路结果用 RRF（倒数排名融合）按名次融合排序。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节3：重排 -->
+  <div class="card stage">
+    <div class="num">3</div>
+    <div class="body">
+      <p class="name">精细重排 + 多样性</p>
+      <span class="mod">reranker.py</span>
+      <p class="desc">综合 BM25 分、向量相似度、位置先验、查询词直接命中率加权打分；可选 MMR（最大边际相关）避免选中的块内容重复。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节4：上下文组装 -->
+  <div class="card stage">
+    <div class="num">4</div>
+    <div class="body">
+      <p class="name">上下文组装</p>
+      <span class="mod">context.py</span>
+      <p class="desc">去重 → 按 token 预算裁剪 → 给每段编号并标注来源 → 生成带引用 [1][2]… 的参考材料。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节5：生成 -->
+  <div class="card stage">
+    <div class="num">5</div>
+    <div class="body">
+      <p class="name">答案生成</p>
+      <span class="mod">generator.py</span><span class="mod">llm.py</span>
+      <p class="desc">默认离线抽取式（无 Key 可用）；配置大模型后自动切换为生成式，提示词强约束"只依据材料、引用编号、不知道就明说"以降低幻觉。</p>
+    </div>
+  </div>
+
+  <div class="arrow"></div>
+
+  <!-- 环节6：对外出口 -->
+  <div class="card stage">
+    <div class="num">6</div>
+    <div class="body">
+      <p class="name">对外出口：答案 + 引用 + 可评测</p>
+      <span class="mod">pipeline.py</span><span class="mod">cli.py</span><span class="mod">server.py</span><span class="mod">eval.py</span>
+      <p class="desc">pipeline.ask() 串起全流程；命令行 / HTTP API 供外部调用；eval 用 Recall@k / MRR@k / Hit@k 量化检索质量。</p>
+    </div>
+  </div>
+
+  <p class="legend">标 <b>●</b> 说明：本图与 README「3.1 一条问答请求在系统里如何流转」一致；核心链路仅用标准库，唯一外部调用是可选的「语义向量 / 大模型 API」，见 <b>config.json</b> 与 <b>net.py</b>。</p>
+
+</div>
+<script>
+  // 轻量增强：点击卡片展开/收起描述（默认已展开，保证无 JS 也可读）
+  (function () {
+    try {
+      var cards = document.querySelectorAll('.card.stage');
+      cards.forEach(function (c) {
+        c.style.cursor = 'pointer';
+        var desc = c.querySelector('.desc');
+        // 桌面端 hover 高亮，移动端 tap 切换展开/收起
+        c.addEventListener('mouseenter', function () { c.style.borderColor = '#93c5fd'; });
+        c.addEventListener('mouseleave', function () { c.style.borderColor = '#e5e7eb'; });
+        c.addEventListener('click', function () {
+          if (desc.style.display === 'none') { desc.style.display = 'block'; }
+          else { desc.style.display = 'none'; }
+        });
+      });
+    } catch (e) { /* JS 不可用时保持静态全量展示，不影响阅读 */ }
+  })();
+</script>
+</body>
+</html>

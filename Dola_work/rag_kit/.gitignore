@@ -1,0 +1,10 @@
+# Python のキャッシュ・一時ファイル
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 構築された索引（再生成可能）
+out/
+
+# OS の隠しファイル
+.DS_Store

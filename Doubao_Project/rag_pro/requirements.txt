@@ -1,0 +1,11 @@
+# 依赖说明 requirements.txt
+#
+# rag_pro 核心功能 100% 使用 Python 标准库实现，无任何强制依赖。
+# 本文件留空是刻意的：不通过 pip 安装任何包也能完整运行。
+#
+# 唯一可选的外部依赖是「语义向量 / 大模型 API」（OpenAI 兼容协议），
+# 它属于网络服务而非 Python 库，无需 pip 安装，只需在 config.json 中
+# 配置 base_url / api_key / model 即可。
+#
+# 若你希望以包形式安装（可选），可执行：
+#   pip install -e .
