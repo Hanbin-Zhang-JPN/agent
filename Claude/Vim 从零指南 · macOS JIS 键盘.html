@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vim 从零指南 · macOS JIS 键盘</title>
+<style>
+  :root{
+    --bg:#1c1e21;
+    --bg-panel:#24262a;
+    --bg-code:#26292d;
+    --text:#dcd9d2;
+    --text-dim:#9a988f;
+    --accent:#d0a361;
+    --accent-2:#7fadd1;
+    --border:#38393d;
+    --danger:#c97b6b;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  *{box-sizing:inherit;}
+  html{scroll-padding-top: calc(56px + env(safe-area-inset-top, 0px));}
+  html,body{height:auto;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","PingFang SC",sans-serif;
+    line-height:1.75;
+    font-size:16px;
+  }
+  code,kbd,pre,.mono{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  }
+  header.top{
+    position:sticky;
+    top:0;
+    padding-top: env(safe-area-inset-top, 0px);
+    background:rgba(28,30,33,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);
+    z-index:10;
+  }
+  header.top .inner{
+    max-width:760px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  }
+  header.top .title{font-family:ui-monospace,monospace;font-size:15px;color:var(--accent);letter-spacing:0.02em;}
+  header.top .sub{font-size:12px;color:var(--text-dim);}
+  main{max-width:760px;margin:0 auto;padding:8px 20px 80px;}
+  h1{
+    font-family:ui-monospace,monospace;
+    font-size:1.9rem;
+    line-height:1.35;
+    color:var(--text);
+    margin:36px 0 6px;
+    font-weight:600;
+  }
+  .lede{color:var(--text-dim);font-size:15px;margin-bottom:28px;}
+  h2{
+    font-family:ui-monospace,monospace;
+    font-size:1.15rem;
+    color:var(--accent);
+    margin:44px 0 12px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+    font-weight:600;
+  }
+  h3{
+    font-size:1rem;
+    color:var(--text);
+    margin:24px 0 8px;
+    font-weight:600;
+  }
+  p{margin:10px 0;max-width:70ch;}
+  ul,ol{margin:10px 0;padding-left:1.4em;}
+  li{margin:5px 0;}
+  a{color:var(--accent-2);text-decoration:none;border-bottom:1px solid rgba(127,173,209,0.35);}
+  a:hover{border-bottom-color:var(--accent-2);}
+  kbd{
+    display:inline-block;
+    background:var(--bg-code);
+    border:1px solid var(--border);
+    border-bottom-width:2px;
+    border-radius:4px;
+    padding:1px 6px;
+    font-size:0.85em;
+    color:var(--accent-2);
+    white-space:nowrap;
+  }
+  code.inline{
+    background:var(--bg-code);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 5px;
+    font-size:0.88em;
+    color:#c9c6bd;
+  }
+  pre{
+    background:var(--bg-code);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent);
+    border-radius:6px;
+    padding:14px 16px;
+    overflow-x:auto;
+    font-size:0.85rem;
+    line-height:1.6;
+    color:#c9c6bd;
+    max-width:100%;
+  }
+  .tablewrap{overflow-x:auto;margin:14px 0;}
+  table{border-collapse:collapse;width:100%;font-size:0.92rem;min-width:420px;}
+  th,td{
+    text-align:left;
+    padding:8px 12px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  th{color:var(--text-dim);font-weight:600;font-size:0.85em;}
+  tr:last-child td{border-bottom:none;}
+  .note{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-left:3px solid var(--accent-2);
+    border-radius:6px;
+    padding:12px 16px;
+    margin:16px 0;
+    font-size:0.94rem;
+  }
+  .warn{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-left:3px solid var(--danger);
+    border-radius:6px;
+    padding:12px 16px;
+    margin:16px 0;
+    font-size:0.94rem;
+  }
+  .note b, .warn b{color:var(--text);}
+  .toc{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:16px 20px;
+    margin:24px 0 8px;
+  }
+  .toc div{font-size:0.8em;color:var(--text-dim);margin-bottom:8px;}
+  .toc ol{columns:2;column-gap:24px;margin:0;padding-left:1.2em;}
+  .toc li{font-size:0.92rem;margin:4px 0;break-inside:avoid;}
+  section{scroll-margin-top:64px;}
+  footer{
+    max-width:760px;margin:0 auto;padding:20px 20px calc(40px + env(safe-area-inset-bottom, 0px));
+    color:var(--text-dim);font-size:0.85rem;border-top:1px solid var(--border);margin-top:40px;
+  }
+  @media (max-width:520px){
+    .toc ol{columns:1;}
+    h1{font-size:1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <span class="title">:help vim-jis</span>
+    <span class="sub">macOS · JIS 键盘</span>
+  </div>
+</header>
+
+<main>
+  <h1>Vim 从零指南<br>面向 MacBook JIS 键盘</h1>
+  <p class="lede">
+    这份文档假设你完全没用过 Vim，重点讲两件事：Vim 本身的核心操作逻辑，以及 JIS 键盘相对 US
+    键盘在符号位置、按键手感上的差异如何影响 Vim 的实际使用。按顺序读完即可具备独立使用能力。
+  </p>
+
+  <div class="toc">
+    <div>目录</div>
+    <ol>
+      <li><a href="#jis">JIS 键盘与 Vim 的关键差异</a></li>
+      <li><a href="#setup">开始之前：终端与初始设置</a></li>
+      <li><a href="#modes">模式：Vim 的核心概念</a></li>
+      <li><a href="#startquit">启动与退出</a></li>
+      <li><a href="#move">光标移动</a></li>
+      <li><a href="#edit">基础编辑</a></li>
+      <li><a href="#visual">可视模式</a></li>
+      <li><a href="#search">查找与替换</a></li>
+      <li><a href="#register">寄存器与系统剪贴板</a></li>
+      <li><a href="#window">窗口、标签页与多文件</a></li>
+      <li><a href="#macro">宏</a></li>
+      <li><a href="#vimrc">配置文件 .vimrc</a></li>
+      <li><a href="#ime">日文/中文输入法的坑</a></li>
+      <li><a href="#next">学习路径与资源</a></li>
+      <li><a href="#cheat">速查表</a></li>
+    </ol>
+  </div>
+
+  <section id="jis">
+    <h2>1. JIS 键盘与 Vim 的关键差异</h2>
+    <p>
+      Vim 的命令高度依赖符号键（<code class="inline">:</code> <code class="inline">/</code>
+      <code class="inline">\</code> <code class="inline">^</code> <code class="inline">~</code>
+      <code class="inline">|</code> 等），而 JIS 布局在这些键的位置和是否需要 Shift 上，和大多数英文教程默认的
+      US 键盘不同。先弄清这几点，能省掉后面大量"为什么敲不出这个符号"的困惑。
+    </p>
+
+    <div class="tablewrap">
+      <table>
+        <tr><th>符号</th><th>US 键盘</th><th>JIS 键盘</th><th>对 Vim 的影响</th></tr>
+        <tr>
+          <td><code class="inline">:</code></td>
+          <td>Shift + <kbd>;</kbd></td>
+          <td>独立按键，<b>不需要 Shift</b></td>
+          <td>命令行模式的 <code class="inline">:</code> 在 JIS 上其实更顺手</td>
+        </tr>
+        <tr>
+          <td><code class="inline">\</code>（反斜杠）</td>
+          <td>独立按键</td>
+          <td>物理键印的是 <b>¥（日元符号）</b>，实际输入的是反斜杠</td>
+          <td>Vim 默认 leader 键常是 <code class="inline">\</code>，在 JIS 上要去按印着 ¥ 的那个键，容易找错</td>
+        </tr>
+        <tr>
+          <td><code class="inline">^</code> <code class="inline">~</code></td>
+          <td>在 <kbd>=</kbd> 键旁</td>
+          <td>在数字 0 右侧、¥ 键左侧的独立键上</td>
+          <td>正则、行首匹配 <code class="inline">^</code> 用得多，位置需要肌肉记忆重建</td>
+        </tr>
+        <tr>
+          <td><code class="inline">[</code> <code class="inline">]</code> <code class="inline">{</code> <code class="inline">}</code></td>
+          <td>P 键右侧两个键</td>
+          <td>大体同位，但和 Shift 组合略有差异</td>
+          <td>代码块跳转 <code class="inline">{</code> <code class="inline">}</code> 影响不大，用前建议实测一次</td>
+        </tr>
+        <tr>
+          <td><code class="inline">_</code>（下划线）</td>
+          <td>Shift + <kbd>-</kbd></td>
+          <td>在「ろ」键（右 Shift 左侧的额外键）上，需要 Shift</td>
+          <td>Vim 中 <code class="inline">_</code> 也是移动命令（行首非空白字符），键位偏僻容易漏按</td>
+        </tr>
+        <tr>
+          <td>Esc</td>
+          <td>独立物理键（老款）</td>
+          <td>Touch Bar 机型上是虚拟按键，非 Touch Bar 机型有物理键但位置偏远</td>
+          <td>Vim 中退出插入模式最高频的键，强烈建议重新映射（见下）</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="warn">
+      <b>关于 Esc 的建议：</b>无论是不是 JIS 键盘，Vim 老手几乎都会把 <kbd>Caps Lock</kbd> 重新映射成
+      <kbd>Esc</kbd>，因为 Caps Lock 位置好按、日常又几乎用不到大写锁定。
+      路径：系统设置 → 键盘 → 键盘快捷键 → 修饰键，把 Caps Lock 改成 Esc。
+      如果想要"单独按是 Esc，按住再配合别的键是 Control"的进阶映射，需要
+      <a href="https://karabiner-elements.pqrs.org/" target="_blank" rel="noopener">Karabiner-Elements</a>。
+    </div>
+  </section>
+
+  <section id="setup">
+    <h2>2. 开始之前：终端与初始设置</h2>
+    <p>macOS 自带 Vim，但版本较旧、功能阉割（不支持剪贴板等）。建议先装一个更完整的版本：</p>
+    <pre>brew install vim
+# 或直接用更现代的实现
+brew install neovim</pre>
+    <p>
+      本文档所有命令对 <code class="inline">vim</code> 和 <code class="inline">nvim</code> 通用，
+      Neovim 只是在插件生态和默认配置上更现代，操作逻辑完全一致。
+    </p>
+  </section>
+
+  <section id="modes">
+    <h2>3. 模式：Vim 的核心概念</h2>
+    <p>
+      理解 Vim 的第一步，也是唯一真正重要的一步，是接受它不是"打字机"，而是一个带状态机的编辑器。
+      同一个按键在不同模式下含义完全不同。
+    </p>
+    <div class="tablewrap">
+      <table>
+        <tr><th>模式</th><th>进入方式</th><th>用途</th></tr>
+        <tr><td>Normal（普通）</td><td>默认模式，或按 <kbd>Esc</kbd></td><td>移动光标、执行命令，不直接输入文字</td></tr>
+        <tr><td>Insert（插入）</td><td><kbd>i</kbd> / <kbd>a</kbd> / <kbd>o</kbd> 等</td><td>像普通文本编辑器一样打字</td></tr>
+        <tr><td>Visual（可视）</td><td><kbd>v</kbd> / <kbd>V</kbd> / <kbd>Ctrl</kbd>+<kbd>v</kbd></td><td>选中文本再操作</td></tr>
+        <tr><td>Command-line（命令行）</td><td><kbd>:</kbd></td><td>保存、退出、替换、执行 Ex 命令</td></tr>
+      </table>
+    </div>
+    <p>
+      新手最常见的错误就是在 Insert 模式下试图移动光标或执行命令，结果打出一堆乱码字符。
+      记住一条原则：<b>不确定自己在哪个模式，先按一次 <kbd>Esc</kbd> 回到 Normal 模式</b>。
+    </p>
+  </section>
+
+  <section id="startquit">
+    <h2>4. 启动与退出</h2>
+    <pre>vim 文件名        # 打开/新建文件
+vim               # 不带文件名打开</pre>
+    <div class="tablewrap">
+      <table>
+        <tr><th>命令</th><th>作用</th></tr>
+        <tr><td><code class="inline">:w</code></td><td>保存</td></tr>
+        <tr><td><code class="inline">:q</code></td><td>退出（无修改时）</td></tr>
+        <tr><td><code class="inline">:wq</code> 或 <kbd>Z</kbd><kbd>Z</kbd></td><td>保存并退出</td></tr>
+        <tr><td><code class="inline">:q!</code></td><td>放弃修改并强制退出</td></tr>
+        <tr><td><code class="inline">:x</code></td><td>有修改才保存，然后退出</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="move">
+    <h2>5. 光标移动</h2>
+    <p>Vim 不鼓励用方向键（虽然也能用），核心是 <kbd>h</kbd> <kbd>j</kbd> <kbd>k</kbd> <kbd>l</kbd>，好处是手不用离开主键位。</p>
+    <div class="tablewrap">
+      <table>
+        <tr><th>按键</th><th>动作</th></tr>
+        <tr><td><kbd>h</kbd> / <kbd>l</kbd></td><td>左 / 右</td></tr>
+        <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>下 / 上</td></tr>
+        <tr><td><kbd>w</kbd></td><td>跳到下一个单词开头</td></tr>
+        <tr><td><kbd>b</kbd></td><td>跳到上一个单词开头</td></tr>
+        <tr><td><kbd>e</kbd></td><td>跳到当前/下一个单词末尾</td></tr>
+        <tr><td><kbd>0</kbd></td><td>跳到行首（含空白）</td></tr>
+        <tr><td><code class="inline">^</code></td><td>跳到行首第一个非空白字符</td></tr>
+        <tr><td><code class="inline">$</code></td><td>跳到行尾</td></tr>
+        <tr><td><kbd>gg</kbd></td><td>跳到文件开头</td></tr>
+        <tr><td><kbd>G</kbd></td><td>跳到文件末尾</td></tr>
+        <tr><td>数字 + <kbd>G</kbd></td><td>跳到第 N 行，如 <code class="inline">42G</code></td></tr>
+        <tr><td><kbd>f</kbd>x</td><td>跳到本行下一个字符 x</td></tr>
+        <tr><td><kbd>t</kbd>x</td><td>跳到 x 前一个字符</td></tr>
+        <tr><td><code class="inline">{</code> / <code class="inline">}</code></td><td>按段落向上/向下跳</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>d</kbd> / <kbd>u</kbd></td><td>向下/向上翻半屏</td></tr>
+      </table>
+    </div>
+    <div class="note">
+      <b>数字前缀通用规则：</b>几乎所有移动和编辑命令前都能加数字表示重复次数，例如
+      <code class="inline">5j</code> 向下 5 行，<code class="inline">3w</code> 向后跳 3 个单词。
+      这是 Vim 效率的关键之一，比连续按键快得多。
+    </div>
+  </section>
+
+  <section id="edit">
+    <h2>6. 基础编辑</h2>
+    <h3>进入插入模式</h3>
+    <div class="tablewrap">
+      <table>
+        <tr><th>按键</th><th>作用</th></tr>
+        <tr><td><kbd>i</kbd></td><td>在光标前插入</td></tr>
+        <tr><td><kbd>a</kbd></td><td>在光标后插入</td></tr>
+        <tr><td><kbd>I</kbd></td><td>在行首插入</td></tr>
+        <tr><td><kbd>A</kbd></td><td>在行尾插入</td></tr>
+        <tr><td><kbd>o</kbd></td><td>在下方新起一行插入</td></tr>
+        <tr><td><kbd>O</kbd></td><td>在上方新起一行插入</td></tr>
+      </table>
+    </div>
+    <h3>删除、复制、粘贴</h3>
+    <div class="tablewrap">
+      <table>
+        <tr><th>按键</th><th>作用</th></tr>
+        <tr><td><kbd>x</kbd></td><td>删除光标处一个字符</td></tr>
+        <tr><td><kbd>dd</kbd></td><td>删除（剪切）一整行</td></tr>
+        <tr><td><kbd>dw</kbd></td><td>删除到下一个单词开头</td></tr>
+        <tr><td><kbd>d$</kbd></td><td>删除到行尾</td></tr>
+        <tr><td><kbd>cw</kbd></td><td>删除一个单词并进入插入模式（改词的标准做法）</td></tr>
+        <tr><td><kbd>yy</kbd></td><td>复制一整行</td></tr>
+        <tr><td><kbd>p</kbd></td><td>在光标后粘贴</td></tr>
+        <tr><td><kbd>P</kbd></td><td>在光标前粘贴</td></tr>
+        <tr><td><kbd>u</kbd></td><td>撤销</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>r</kbd></td><td>重做</td></tr>
+        <tr><td><code class="inline">.</code></td><td>重复上一次修改操作</td></tr>
+      </table>
+    </div>
+    <div class="note">
+      <b>动作的组合逻辑：</b><code class="inline">d</code>（删除）、<code class="inline">c</code>（改）、
+      <code class="inline">y</code>（复制）都可以和第 5 节的移动命令组合，构成"动词 + 范围"的语法，
+      例如 <code class="inline">d}</code> 删到段落结尾，<code class="inline">c$</code> 改到行尾。
+      这是 Vim 真正的核心设计，比背单条快捷键重要得多。
+    </div>
+  </section>
+
+  <section id="visual">
+    <h2>7. 可视模式</h2>
+    <div class="tablewrap">
+      <table>
+        <tr><th>按键</th><th>作用</th></tr>
+        <tr><td><kbd>v</kbd></td><td>逐字符选择</td></tr>
+        <tr><td><kbd>V</kbd></td><td>整行选择</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>v</kbd></td><td>块选择（按列选中，改多行同一位置很有用）</td></tr>
+      </table>
+    </div>
+    <p>选中后可以直接接 <code class="inline">d</code>（删除）、<code class="inline">y</code>（复制）、
+      <code class="inline">></code> / <code class="inline">&lt;</code>（缩进）等操作。</p>
+  </section>
+
+  <section id="search">
+    <h2>8. 查找与替换</h2>
+    <div class="tablewrap">
+      <table>
+        <tr><th>命令</th><th>作用</th></tr>
+        <tr><td><code class="inline">/pattern</code></td><td>向下查找</td></tr>
+        <tr><td><code class="inline">?pattern</code></td><td>向上查找</td></tr>
+        <tr><td><kbd>n</kbd> / <kbd>N</kbd></td><td>下一个 / 上一个匹配</td></tr>
+        <tr><td><code class="inline">:%s/old/new/g</code></td><td>全文替换所有 old 为 new</td></tr>
+        <tr><td><code class="inline">:%s/old/new/gc</code></td><td>同上，逐个确认</td></tr>
+        <tr><td><code class="inline">:5,10s/old/new/g</code></td><td>只替换第 5~10 行</td></tr>
+      </table>
+    </div>
+    <div class="warn">
+      在 JIS 键盘上输入 <code class="inline">:</code> 不需要 Shift，比 US 键盘更顺手，但正则里常用的
+      <code class="inline">^</code> <code class="inline">$</code> 位置不同，写复杂正则时建议放慢速度确认符号。
+    </div>
+  </section>
+
+  <section id="register">
+    <h2>9. 寄存器与系统剪贴板</h2>
+    <p>
+      Vim 的复制粘贴默认走"无名寄存器"，和 macOS 系统剪贴板是两回事。要和其他 App 互相粘贴，需要显式指定寄存器：
+    </p>
+    <pre>"+y   " 复制到系统剪贴板（先选中文本，再执行）
+"+p   " 从系统剪贴板粘贴</pre>
+    <div class="note">
+      <b>前提：</b>系统自带的 Vim 不一定支持 <code class="inline">+clipboard</code>。
+      运行 <code class="inline">vim --version | grep clipboard</code> 查看，如果显示
+      <code class="inline">-clipboard</code>（带减号）说明不支持，需要用
+      <code class="inline">brew install vim</code> 装带剪贴板支持的版本。
+    </div>
+  </section>
+
+  <section id="window">
+    <h2>10. 窗口、标签页与多文件</h2>
+    <div class="tablewrap">
+      <table>
+        <tr><th>命令</th><th>作用</th></tr>
+        <tr><td><code class="inline">:sp 文件名</code></td><td>水平分割窗口</td></tr>
+        <tr><td><code class="inline">:vsp 文件名</code></td><td>垂直分割窗口</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>w</kbd> 再按方向键</td><td>在分割窗口间移动</td></tr>
+        <tr><td><code class="inline">:tabnew 文件名</code></td><td>新建标签页</td></tr>
+        <tr><td><kbd>gt</kbd> / <kbd>gT</kbd></td><td>切换到下一个/上一个标签页</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="macro">
+    <h2>11. 宏</h2>
+    <p>把一串操作录制下来重复执行，是 Vim 批量编辑的核心手段之一。</p>
+    <pre>qa      开始把接下来的操作录制到寄存器 a
+...     执行你想重复的操作
+q       停止录制
+@a      执行一次寄存器 a 里的宏
+10@a    连续执行 10 次
+@@      重复上一次执行的宏</pre>
+  </section>
+
+  <section id="vimrc">
+    <h2>12. 配置文件 .vimrc</h2>
+    <p>配置文件位于 <code class="inline">~/.vimrc</code>（Neovim 是 <code class="inline">~/.config/nvim/init.vim</code>）。一个可用的起步版本：</p>
+    <pre>set number          " 显示行号
+set relativenumber " 相对行号，方便配合数字前缀移动
+set expandtab       " Tab 转空格
+set tabstop=2
+set shiftwidth=2
+set ignorecase      " 搜索忽略大小写
+set smartcase       " 但输入大写时区分大小写
+set incsearch       " 输入时实时高亮搜索结果
+set clipboard=unnamed " 让 y/p 默认使用系统剪贴板</pre>
+    <div class="warn">
+      前面提到 JIS 键盘上默认 leader 键 <code class="inline">\</code> 藏在印着 ¥ 的键上，很多人会在
+      .vimrc 里把它改成更好按的键，例如：
+      <pre>let mapleader = " "   " 把 leader 换成空格键</pre>
+    </div>
+  </section>
+
+  <section id="ime">
+    <h2>13. 中文/日文输入法的坑</h2>
+    <p>
+      这一节和 JIS 键盘本身无关，但对中文/日文用户几乎必然遇到：在插入模式下用系统输入法打完字后，
+      直接按 <kbd>Esc</kbd> 切回 Normal 模式，输入法的候选框有时不会立刻退出，导致下一次进入插入模式时
+      还带着输入法状态，出现"明明按了字母键却在打拼音"的情况。
+    </p>
+    <ul>
+      <li>养成习惯：打完一段文字后先按一次 Esc 确认候选框已消失，再操作。</li>
+      <li>部分场景可以用 <code class="inline">im-select</code> 之类的工具，让 Vim 退出插入模式时自动切回英文输入法。</li>
+      <li>Neovim 用户也可以配置 <code class="inline">autocmd</code> 在离开插入模式时调用系统命令切换输入法，但配置成本较高，先跑通基础操作再考虑。</li>
+    </ul>
+  </section>
+
+  <section id="next">
+    <h2>14. 学习路径与资源</h2>
+    <ol>
+      <li>终端里运行 <code class="inline">vimtutor</code>（自带，中文版可用 <code class="inline">vimtutor zh</code>），大约 30 分钟，覆盖本文档前 8 节的全部内容，动手做一遍比读文档有效。</li>
+      <li>连续两周，日常编辑文本（哪怕不写代码）都强制用 Vim，肌肉记忆是唯一有效的学习方式。</li>
+      <li>熟练基础操作后再考虑插件（如文件树 NERDTree、模糊搜索 fzf、LSP 补全），过早引入插件会掩盖对原生操作的掌握。</li>
+      <li>如果决定长期使用，评估迁移到 Neovim：配置生态更活跃，语法基本兼容。</li>
+    </ol>
+  </section>
+
+  <section id="cheat">
+    <h2>15. 速查表</h2>
+    <div class="tablewrap">
+      <table>
+        <tr><th>场景</th><th>命令</th></tr>
+        <tr><td>保存退出</td><td><code class="inline">:wq</code></td></tr>
+        <tr><td>强制退出不保存</td><td><code class="inline">:q!</code></td></tr>
+        <tr><td>撤销 / 重做</td><td><kbd>u</kbd> / <kbd>Ctrl</kbd>+<kbd>r</kbd></td></tr>
+        <tr><td>复制当前行</td><td><kbd>yy</kbd></td></tr>
+        <tr><td>删除当前行</td><td><kbd>dd</kbd></td></tr>
+        <tr><td>修改一个单词</td><td><kbd>cw</kbd></td></tr>
+        <tr><td>全文替换</td><td><code class="inline">:%s/old/new/g</code></td></tr>
+        <tr><td>复制到系统剪贴板</td><td><code class="inline">"+y</code></td></tr>
+        <tr><td>跳到文件末尾/开头</td><td><kbd>G</kbd> / <kbd>gg</kbd></td></tr>
+        <tr><td>重复上一次编辑</td><td><code class="inline">.</code></td></tr>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  本文档基于 Vim/Neovim 通用行为与 Mac JIS 键盘布局的稳定事实整理，不涉及需要联网核实的时效信息。
+  实际按键位置以你的具体机型为准，遇到不确定的符号建议在 <code class="inline">vimtutor</code> 中直接试打确认。
+</footer>
+
+</body>
+</html>
