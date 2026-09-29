@@ -67,10 +67,11 @@
 
 ```bash
 python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --glossary
 python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
 ```
 
-第一条命令训练并生成文本；第二条用数值微分检查手写的梯度。
+第一条命令训练并生成文本；`--glossary` 单独显示术语解释；最后一条用数值微分检查手写的梯度。
 
 #### RAG 项目
 
@@ -215,10 +216,11 @@ Requires Python 3.10 or newer; no third-party packages are needed.
 
 ```bash
 python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --glossary
 python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
 ```
 
-The first command trains the model and generates text. The second checks the handwritten gradients with numerical differentiation.
+The first command trains the model and generates text. `--glossary` prints definitions without training. The last command checks the handwritten gradients with numerical differentiation.
 
 #### RAG projects
 
@@ -361,10 +363,11 @@ Python 3.10 以降が必要です。外部パッケージは使いません。
 
 ```bash
 python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --glossary
 python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
 ```
 
-1 行目はモデルを学習させて文章を生成します。2 行目は手書きの勾配を数値微分で確認します。
+1 行目はモデルを学習させて文章を生成します。`--glossary` は用語の説明だけを表示します。最後の行は手書きの勾配を数値微分で確認します。
 
 #### RAG プロジェクト
 

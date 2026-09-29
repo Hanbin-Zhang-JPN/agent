@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""只用 Python 标准库，亲手运行一个可训练的 decoder-only Transformer。
+"""只用 Python 标准库，运行一个能训练的小型 Transformer 语言模型。
 
 运行：python3 learn_llm_from_scratch.py
+查看术语：python3 learn_llm_from_scratch.py --glossary
 改变解码：python3 learn_llm_from_scratch.py --top-k 5 --temperature 0.7
 核对反向传播：python3 learn_llm_from_scratch.py --check-grad --steps 0
 需要 Python 3.10 或更高版本；无需安装第三方库。
 
-脚本从头计算字节级 BPE、嵌入、位置编码、
+不熟悉术语时，先看下方 GLOSSARY，或运行 --glossary。脚本从头计算字节级 BPE、嵌入、位置编码、
 多头因果自注意力、前馈网络、层归一化、交叉熵、反向传播、Adam 和逐 token 生成。
 训练目标与 GPT 一类 decoder-only LLM 相同。模型只有一层，维度和语料也小；
 代码没有实现 dropout、批处理或加速用的矩阵计算。
@@ -42,6 +43,55 @@ import random
 from collections import Counter
 
 
+# 这份速查表可以单独打印：python3 learn_llm_from_scratch.py --glossary
+# 同一个词在代码里第一次出现时，附近通常还有针对那一步的解释。
+GLOSSARY = """术语速查
+
+文字和数据
+  语料：拿来训练的文本。本脚本的语料就是下方 CORPUS 中的句子。
+  UTF-8：把文字表示成字节的规则。一个常见汉字通常占 3 个字节。
+  token：模型一次处理的文本片段。它可能是一个字节、汉字的一部分或几个字。
+  ID / 词表：每种 token 有一个整数 ID；词表记录 ID 对应哪些字节。
+  BPE：不断把语料中最常挨在一起的两个片段合成新 token 的分词方法。
+  EOS：表示一句文本结束的特殊 token，本身不对应普通文字。
+
+模型怎样计算
+  参数：训练时会改变的数字，例如嵌入表、矩阵和偏置。
+  向量 / 维度：排成一列的数字；[0.2, -0.1] 是一个 2 维向量。
+  矩阵：由多行向量组成的数字表。模型用矩阵把输入向量换成新的向量。
+  嵌入：按 token ID 从参数表里取出的向量；位置也有自己的向量。
+  位置编码：让模型区分文字顺序的信息；这里把位置向量加到 token 向量上。
+  上下文：预测当前答案时模型看得到的前文；context 限制最多看多少 token。
+  Transformer：用注意力汇总不同位置的信息，再逐位置经过前馈网络的模型结构。
+  decoder-only：只根据已出现的 token 预测后面的 token；这里采用 GPT 类模型的结构。
+  Q / K / V：Query 与各 Key 比较得到权重；Value 是按权重取回的向量。
+  注意力：当前位置给可见的旧位置分配权重，取回它们的 Value 并加权求和。
+  多头：把 Q/K/V 分成几段，各段独立计算注意力，最后合起来。
+  因果遮罩：让位置 i 看不到 i 之后的 token，训练时便不会偷看答案。
+  层归一化：对一个 token 的向量做缩放，控制各维数值的分布。
+  残差连接：把某一层的输入加到该层输出上，保留一条直接传递信息的路径。
+  前馈网络：对每个位置分别做线性变换和非线性变换；这里用 GELU 激活。
+  GELU：一种非线性函数；输入翻倍时，输出不一定跟着翻倍。
+  logits：模型为词表中每个候选 token 给出的原始分数，还不是概率。
+  softmax：把一组分数变成总和为 1 的概率；此处分别用于注意力和输出。
+
+训练和生成
+  交叉熵 / 损失：正确 token 的概率为 p 时，单次损失是 -log(p)；p 越大，损失越小。
+  梯度：参数增大一点时损失如何变化；梯度为负表示此时增大参数会降低损失。
+  链式法则：把各层之间的影响逐段相乘，求早期参数对最终损失的影响。
+  反向传播：按计算的反方向使用链式法则，把梯度传回每一层。
+  Adam：根据当前和过去的梯度更新参数的一种算法；这里还会裁剪过大的梯度。
+  batch：一次参数更新使用多少段训练样本；这里每次只用 1 段。
+  dropout：训练时随机把部分中间值置零的做法；此脚本没有实现。
+  困惑度：交叉熵损失取指数后的数，常用于衡量下一 token 预测。
+  数值微分：给一个参数加减微小量，用损失变化近似求出梯度。
+  自回归：生成一个 token，把它接在已有序列后面，再预测下一个。
+  top-k：生成时只考虑分数最高的 k 个候选；k=1 就是每次选最高分。
+  temperature：生成时用它缩放 logits；低于 1 时分布更集中。
+  KV cache：生成时保存已算过的 Key 和 Value，减少重复计算；此脚本没有使用。
+"""
+
+
 # 语料库：每个字符串是一条训练文本。* 8 表示把整个列表重复八次，
 # 训练时会反复抽到这些句子。重复八遍只增加抽样机会，不增加句型。
 CORPUS = [
@@ -61,9 +111,11 @@ CORPUS = [
 
 
 class ByteBPE:
-    """最小的字节级 BPE：词表先含 0..255，随后逐次合并高频相邻 token。
+    """字节级 BPE：把高频相邻片段逐步合并成 token。
 
-    主流 tokenizer 往往还会先按正则切词、限制词表或做特殊空格处理。
+    最初的 256 个 token 各代表一种字节，ID 为 0..255。
+    tokenizer 是“把文字变成 token ID”的程序。主流 tokenizer 往往还会先按
+    预设规则切分文字，或对空格做特殊处理。
     此处保留 BPE 的核心算法；每条训练文本独立统计，不跨文本边界合并。
     合并越多，常见文本通常会用更少 token 表示，词表和输出层也会变大。
     BPE 负责把文字映射成 ID；模型训练才会改变这些 ID 对应的向量。
@@ -77,7 +129,7 @@ class ByteBPE:
         for left, right in merges:
             # 新 token 的字节内容 = 左 token 的字节 + 右 token 的字节。
             self.pieces.append(self.pieces[left] + self.pieces[right])
-        self.eos_id = len(self.pieces)  # EOS 是独立的特殊 token，不属于 UTF-8 字节。
+        self.eos_id = len(self.pieces)  # EOS 表示文本结束，占一个独立 ID。
 
     @classmethod
     def train(cls, texts: list[str], num_merges: int) -> "ByteBPE":
@@ -145,7 +197,7 @@ def cosine(a: list[float], b: list[float]) -> float:
 
 
 def softmax(values: list[float]) -> list[float]:
-    """把任意实数分数变成非负且总和为 1 的概率分布。"""
+    """把分数变成概率。概率非负，全部加起来等于 1。"""
     # 减最大值不改变概率，却可防止 exp 溢出。
     peak = max(values)
     exps = [math.exp(v - peak) for v in values]
@@ -155,7 +207,7 @@ def softmax(values: list[float]) -> list[float]:
 
 
 def gelu(x: float) -> float:
-    """GELU 非线性激活；没有非线性，多层线性变换仍只相当于一层。"""
+    """GELU 是一种激活函数：让输入和输出不再保持简单的线性关系。"""
     return 0.5 * x * (1.0 + math.erf(x / math.sqrt(2.0)))
 
 
@@ -165,7 +217,7 @@ def gelu_grad(x: float) -> float:
 
 
 class Parameter:
-    """一组可学习数字，以及与每个数字一一对应的梯度和优化器状态。"""
+    """一组训练时会改变的数字，以及它们的梯度和 Adam 要保存的历史值。"""
 
     def __init__(self, values: list[float]):
         # data 是当前参数值；grad 是损失对参数的导数，训练时据此更新 data。
@@ -180,7 +232,8 @@ def linear(x: list[float], w: Parameter, out_dim: int, bias: Parameter | None = 
     """线性层 y=xW+b；W 按 [输入维, 输出维] 展平成一个列表。
 
     例如输入维=2、输出维=3 时，W 实际有 6 个数。第 i 行第 j 列
-    放在列表的 i*3+j 处。没有 bias 时，从全零输出开始累加。
+    放在列表的 i*3+j 处。bias（偏置）是加到输出上的可训练数字；
+    没有 bias 时，从全零输出开始累加。
     """
     result = bias.data.copy() if bias else [0.0] * out_dim
     for i, xi in enumerate(x):
@@ -195,6 +248,8 @@ def linear_backward(x: list[float], w: Parameter, dy: list[float], bias: Paramet
     """线性层的反向传播：已知输出梯度 dy，求输入梯度 dx，并累加参数梯度。
 
     “梯度”可以理解为：某个数略微改变时，最终损失会怎样改变。
+    这里反复使用的“链式法则”是：如果损失受 y 影响，而 y 又受 x 影响，
+    就把这两段影响相乘，求出损失对 x 的影响。
     同一个参数可能被多个 token 使用，所以这里用 += 累加，而不是覆盖。
     """
     out_dim = len(dy)
@@ -213,7 +268,7 @@ def linear_backward(x: list[float], w: Parameter, dy: list[float], bias: Paramet
 
 
 def layer_norm(x: list[float], gamma: Parameter, beta: Parameter):
-    """对一个 token 的各个向量维度做归一化，再做可学习的缩放和平移。"""
+    """对一个 token 的向量求均值和方差，再缩放到较稳定的数值范围。"""
     mean = sum(x) / len(x)
     var = sum((v - mean) ** 2 for v in x) / len(x)
     # 方差可能接近 0；1e-5 防止除零。inv_std 是“标准差的倒数”。
@@ -243,10 +298,10 @@ def layer_norm_backward(dy: list[float], cache, gamma: Parameter, beta: Paramete
 class TinyTransformer:
     """单层、两头、pre-LN 的自回归 Transformer，完整训练全部参数。
 
-    pre-LN 指先做 LayerNorm，再送入注意力或前馈网络。
+    pre-LN 指先做层归一化（LayerNorm），再送入注意力或前馈网络。
     主要数据形状：输入 ids=[t]；隐藏状态=[t,d]；输出 logits=[t,V]。
-    位置采用可学习的绝对位置向量；很多新模型改用 RoPE 等位置方法，
-    但“模型必须知道 token 的顺序”这一需求相同。
+    位置采用可学习的绝对位置向量；有些模型改用 RoPE（旋转位置编码），
+    将位置信息放进注意力中的 Q/K。两种做法都让模型区分 token 顺序。
     """
 
     def __init__(self, vocab: int, context: int, width: int = 16, heads: int = 2, ff_width: int = 32, seed: int = 7):
@@ -271,7 +326,7 @@ class TinyTransformer:
         self.pos = param(context * d, 0.08)  # 可学习的绝对位置向量。
         # ln1/ln2/ln3 是三处层归一化，每处都有 gamma(g) 和 beta(b)。
         self.ln1_g, self.ln1_b = param(d, fill=1.0), param(d, fill=0.0)
-        # 三个独立矩阵把同一隐藏向量投影成 Query、Key、Value。
+        # “投影”就是乘以一个可训练矩阵。三个矩阵分别算出 Query、Key、Value。
         self.wq = param(d * d, 1 / math.sqrt(d))
         self.wk = param(d * d, 1 / math.sqrt(d))
         self.wv = param(d * d, 1 / math.sqrt(d))
@@ -310,14 +365,14 @@ class TinyTransformer:
             start, end = head * self.head_dim, (head + 1) * self.head_dim
             head_weights = []
             for i in range(t):
-                # j 只到 i，等价于把未来位置打分设为 -∞ 的 causal mask。
+                # j 只到 i，这就是因果遮罩：位置 i 不会读取未来位置。
                 # 用 √头维度 缩放，避免维度较大时点积过大、softmax 过于尖锐。
                 scores = [dot(q[i][start:end], k[j][start:end]) / math.sqrt(self.head_dim)
                           for j in range(i + 1)]
                 # 此处 softmax 是沿“可看的历史位置 j”进行，得到注意力权重。
                 # 最后预测 token 时还有另一次 softmax，那次是沿词表 ID 进行。
                 probs = softmax(scores)
-        # head_weights[i][j] 是位置 i 对位置 j 的注意力权重。
+                # head_weights[i][j] 是位置 i 对位置 j 的注意力权重。
                 head_weights.append(probs)
                 for j, probability in enumerate(probs):
                     for c in range(start, end):
@@ -439,7 +494,8 @@ class TinyTransformer:
         """根据刚算出的梯度更新所有参数。
 
         lr 是学习率，决定每次移动多大；clip 限制整体梯度过大。
-        这里实现普通 Adam；大型 LLM 常用相关的 AdamW 和学习率调度。
+        梯度裁剪是把过大的梯度整体缩小，避免一次更新走得太远。
+        这里的学习率固定；大型训练任务通常会在训练过程中调整学习率。
         """
         self.step_number += 1
         # 把所有参数梯度看成一条很长的向量，计算其欧氏长度。
@@ -464,14 +520,16 @@ class TinyTransformer:
                  temperature: float = 0.8, top_k: int = 1) -> list[int]:
         """从提示词开始，最多再产生 count 个 token。
 
-        top_k=1 每次取分数最高的 token，即贪心解码；更大的 top_k 可随机采样。
-        temperature<1 会使高分 token 更占优势，>1 则使分布更平缓。
+        top_k=1 每次取分数最高的 token，叫贪心解码；更大的 top_k 会在候选中抽样。
+        temperature 是采样温度：把每个分数除以它，再算概率。低于 1 时
+        高分 token 更占优势，高于 1 时各 token 的概率更接近。
         """
         if not prefix or temperature <= 0 or top_k < 1:
             raise ValueError("prefix 不能为空，temperature 和 top_k 必须大于 0")
         result = prefix.copy()
         for _ in range(count):
-            # 每次只读取最后 context 个 token；真实 LLM 通常用 KV cache 避免重算。
+            # 每次只读取最后 context 个 token。KV cache 会保存前几步算好的
+            # Key 和 Value，避免每生成一个 token 就重新算整段前文；这里直接重算。
             logits, _ = self.forward(result[-self.context:])
             # forward 为输入的每个位置都算分数；生成只用最后一个位置。
             row = logits[-1]
@@ -489,7 +547,8 @@ class TinyTransformer:
 def gradient_check(model: TinyTransformer, ids: list[int], targets: list[int]):
     """用数值微分检查手写导数，避免代码看似能训练但梯度实际有错。
 
-    对一个参数分别加、减很小的 eps，看损失改变多少，再与反向传播比较。
+    数值微分：对一个参数分别加、减很小的 eps，看损失改变多少，
+    用两次损失之差估算导数，再与反向传播的结果比较。
     数值微分每查一个参数都要额外运行两次前向，不能用于完整模型训练。
     """
     model.loss_and_backward(ids, targets)
@@ -527,7 +586,7 @@ def show_next_token_predictions(model: TinyTransformer, tokenizer: ByteBPE, prom
     """打印给定前缀后概率最高的几个 token，连接 logits 与可见文字。
 
     这里显示的是“紧接着的一个 token”，不是完整句子的概率。
-    某个 token 若只含半个汉字的 UTF-8 字节，就显示 bytes 的写法。
+    某个 token 若只含汉字的一部分 UTF-8 字节，就显示 bytes 的写法。
     """
     ids = tokenizer.encode(prompt)
     if not ids:
@@ -573,6 +632,7 @@ def main():
     """把上面的零件串起来；建议初读源码时先从这里开始。"""
     # argparse 是标准库的命令行参数解析器。运行 --help 可查看所有可调选项。
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--glossary", action="store_true", help="只打印术语速查表，不训练模型")
     parser.add_argument("--steps", type=int, default=400, help="训练步数；0 表示只看未训练模型")
     parser.add_argument("--merges", type=int, default=40, help="BPE 合并次数")
     parser.add_argument("--context", type=int, default=16, help="最大上下文 token 数")
@@ -581,11 +641,15 @@ def main():
     parser.add_argument("--temperature", type=float, default=0.8, help="采样温度；top-k=1 时不起作用")
     parser.add_argument("--check-grad", action="store_true", help="用数值微分核对反向传播")
     args = parser.parse_args()
+    if args.glossary:
+        print(GLOSSARY)
+        return
     if args.steps < 0 or args.merges < 0 or args.context < 2 or args.top_k < 1 or args.temperature <= 0:
         parser.error("steps、merges 不能为负，context 至少为 2，top-k 和 temperature 必须大于 0")
 
     # 第一步：仅凭训练语料学习 BPE 合并规则，再试着编码/解码一个句子。
     tokenizer = ByteBPE.train(CORPUS, args.merges)
+    print("术语看不懂时，可以单独运行：python3 learn_llm_from_scratch.py --glossary")
     example = "春天来了，花开了。"
     encoded = tokenizer.encode(example)
     print("\n① 分词：文本 → UTF-8 字节 → BPE token ID")
@@ -593,7 +657,7 @@ def main():
     print("token ID:", encoded)
     print("每个 token 对应的字节:", [tokenizer.pieces[i] for i in encoded])
     print("还原:", tokenizer.decode(encoded), "| 词表大小:", tokenizer.eos_id + 1)
-    print("说明：一个 token 可以是一个字节，也可以是频繁出现的多字节片段；不等于一个汉字。")
+    print("BPE 会合并常见的相邻片段，所以一个 token 可能是部分汉字，也可能是几个字。")
 
     # 词表是普通 token 加一个 EOS；模型输出层必须能为每个 ID 给出分数。
     model = TinyTransformer(tokenizer.eos_id + 1, args.context)
@@ -608,6 +672,7 @@ def main():
     print("\n② 向量：查找可训练的嵌入矩阵行，再加位置向量")
     print(f"token {token_a} 的前 6 维: {[round(x, 3) for x in va[:6]]}")
     print(f"两个初始 token 向量的余弦相似度: {cosine(va, vb):.4f}")
+    print("余弦相似度比较两个向量的方向：接近 1 表示方向相近，接近 0 表示近乎垂直。")
     print("注意：这些向量刚随机初始化，相似度尚无语义；训练后才可能学到有用关系。")
 
     # 把多条文本拼成一个 token 流，并在每条文本后插入 EOS。
@@ -627,8 +692,10 @@ def main():
     logits, cache = model.forward(sample_ids)
     # cache 的第 8 项保存所有注意力头的权重；[0][-1] 是头 0 最后位置的权重。
     weights = cache[8]
-    print("\n③ 多头因果自注意力：Q=XWq, K=XWk, V=XWv")
-    print("每个头计算 softmax(QKᵀ / √头维度 + 因果遮罩)V，再拼接并经 Wo。")
+    print("\n③ 多头因果自注意力：分头汇总前文，不读取未来位置")
+    print("Q、K、V 是同一输入分别乘以三个矩阵后得到的向量。")
+    print("Q 与历史 K 比较得到分数；softmax 把分数变成权重，再按权重混合历史 V。")
+    print("代码中的公式是 softmax(QKᵀ / √头维度 + 因果遮罩)V；各头结果拼接后再乘 Wo。")
     print("头 0 最后位置对当前位置及之前位置的权重:", [round(x, 3) for x in weights[0][-1]])
     print("未来位置根本不进入 softmax，因此训练时不会偷看目标 token。")
     # 实验：给原序列末尾加一个“未来 token”，再对比原来各位置的 logits。
@@ -641,7 +708,8 @@ def main():
         print(f"因果性自检：加入未来 token 后，已有位置的最大分数变化 = {largest_change:.1e}")
     print("注意力权重表示 Value 的混合比例；单看权重，不能断定某个词对最终答案有多重要。")
     print("注意力 softmax 在历史位置之间分配权重；输出 softmax 则在整个词表之间分配概率。")
-    print("残差、层归一化、GELU 前馈网络和最终线性层把隐藏状态变成整个词表的 logits。")
+    print("残差连接把原向量加回来；层归一化调整数值范围；GELU 为前馈网络加入非线性。")
+    print("输出层给词表中的每个 token 一个 logit（原始分数），softmax 再把分数转成概率。")
     print(f"随机均匀猜测时的理论交叉熵约为 ln(词表大小) = {math.log(model.vocab):.3f}")
     print(f"未训练时的平均下一 token 损失: {_loss_only(model, sample_ids, sample_targets):.3f}")
 
@@ -657,7 +725,8 @@ def main():
         gradient_check(model, sample_ids, sample_targets)
 
     if args.steps:
-        print("\n⑤ 训练：输入 [t₀…tₙ₋₁]，目标 [t₁…tₙ]，交叉熵反向传播到全部参数")
+        print("\n⑤ 训练：用已有 token 预测下一个 token，再按预测误差更新参数")
+        print("交叉熵衡量模型给正确 token 的概率；概率越低，损失越高。")
         for step in range(1, args.steps + 1):
             # 随机截取一个长度为 context 的连续窗口。这是 batch size=1 的训练。
             start = rng.randrange(len(stream) - args.context)
@@ -698,13 +767,13 @@ def main():
     if not prefix:
         parser.error("prompt 不能为空")
     output = model.generate(prefix, 40, tokenizer.eos_id, rng, args.temperature, args.top_k)
-    print("\n⑥ 自回归生成：每次仅从最后一个位置的分布选一个 token，再接到输入后面")
+    print("\n⑥ 自回归生成：一次选一个 token，接到已有文本后，再预测下一个")
     print("提示词:", args.prompt)
     print("解码:", "贪心" if args.top_k == 1 else f"top-k={args.top_k}, temperature={args.temperature}")
     print("生成:", tokenizer.decode(output))
     print("\n边界：样本很少，生成内容可能不通顺；这反映数据与算力限制，不改变模型的计算方式。")
     print("采样时若出现 �，通常是字节 token 尚未组合成合法 UTF-8；它不代表一个特殊预测 token。")
-    print("实际 LLM 通常有更多层和参数、更大语料，并使用高效矩阵运算、不同的位置方法与 KV cache。")
+    print("大型 LLM 通常有更多层和参数、更大语料，并用缓存减少生成时的重复计算。")
 
 
 if __name__ == "__main__":
