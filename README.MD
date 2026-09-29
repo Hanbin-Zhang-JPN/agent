@@ -26,6 +26,7 @@
 | 内容 | 形式 | 简介 |
 | --- | --- | --- |
 | [蜀门甩二](Codex/sichuan-shuai-er/) | HTML / CSS / JavaScript | 四人两队的四川单副升级扑克游戏，可直接在浏览器运行，包含 AI 对手、进度保存和规则测试。 |
+| [从零学习 LLM](Codex/learn_llm_from_scratch.py) | Python 3.10+ | 只用标准库实现字节级 BPE、向量、因果注意力、训练和逐 token 生成；源码含中文注释。 |
 | [HowToLiveBetter 离线版](Codex/HowToLiveBetter.html) / [PDF 版](Codex/HowToLiveBetter-1.pdf) | HTML / PDF | 《高性价比人生指南》的离线检索页面与 344 页 PDF 成品。 |
 | [IT パスポート 2026 完全复习指南](Codex/ITパスポート_2026_完全復習ガイド_Ver6.5.docx) | DOCX | 日文 IT Passport 考试复习资料。 |
 | [日本特色车站名 200 选](Codex/japan_special_station_names_200.xlsx) | XLSX | 日本特色车站名称整理表。 |
@@ -58,7 +59,18 @@
 
 ### 快速运行
 
-以下命令均从仓库根目录执行。
+以下各段命令都从仓库根目录开始执行。
+
+#### Python 学习脚本
+
+需要 Python 3.10 或更新版本，不用安装第三方包。
+
+```bash
+python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
+```
+
+第一条命令训练并生成文本；第二条用数值微分检查手写的梯度。
 
 #### RAG 项目
 
@@ -117,7 +129,7 @@ node --test tests/rules.test.js
 ```text
 .
 ├── Claude/          # 书籍项目、Vim/机场资料、LaTeX 速查表
-├── Codex/           # 浏览器游戏、文档、表格、PDF/HTML 成品与图像素材
+├── Codex/           # 浏览器游戏、LLM 学习脚本、文档、表格、PDF/HTML 与图像素材
 ├── Dola_work/       # 日文白箱 RAG 项目
 ├── Doubao_Project/  # C/Java 教学项目与多套 RAG 实现
 ├── Qoter/           # HTML、Python、Markdown、LaTeX 学习资料
@@ -134,7 +146,7 @@ node --test tests/rules.test.js
 ---
 
 首次提交：2026-09-22 08:33（UTC+9，日本东京）<br>
-README 更新：2026-09-26
+README 更新：2026-09-30
 
 ---
 
@@ -162,6 +174,7 @@ This repository collects projects and learning materials made or organized with 
 | Project or resource | Format | Description |
 | --- | --- | --- |
 | [Shu Men Shuai Er](Codex/sichuan-shuai-er/) | HTML / CSS / JavaScript | A four-player, two-team Sichuan card game that runs in a browser. Includes AI opponents, saved progress, and rules tests. |
+| [Learn how an LLM works](Codex/learn_llm_from_scratch.py) | Python 3.10+ | A standard-library implementation of byte-level BPE, embeddings, causal attention, training, and token-by-token generation, with Chinese comments. |
 | [HowToLiveBetter offline edition](Codex/HowToLiveBetter.html) / [PDF edition](Codex/HowToLiveBetter-1.pdf) | HTML / PDF | An offline searchable edition of the life guide and a 344-page PDF. |
 | [IT Passport 2026 complete review guide](Codex/ITパスポート_2026_完全復習ガイド_Ver6.5.docx) | DOCX | Japanese-language study material for the IT Passport exam. |
 | [200 distinctive Japanese station names](Codex/japan_special_station_names_200.xlsx) | XLSX | Spreadsheet of distinctive station names in Japan. |
@@ -194,7 +207,18 @@ This repository collects projects and learning materials made or organized with 
 
 ### Quick start
 
-Run each group of commands from the repository root.
+Start each command block at the repository root.
+
+#### Python learning script
+
+Requires Python 3.10 or newer; no third-party packages are needed.
+
+```bash
+python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
+```
+
+The first command trains the model and generates text. The second checks the handwritten gradients with numerical differentiation.
 
 #### RAG projects
 
@@ -253,7 +277,7 @@ node --test tests/rules.test.js
 ```text
 .
 ├── Claude/          # Book project, Vim and airport guides, LaTeX cheat sheet
-├── Codex/           # Browser game, documents, spreadsheets, PDF/HTML, artwork
+├── Codex/           # Browser game, LLM learning script, documents, spreadsheets, PDF/HTML, artwork
 ├── Dola_work/       # Japanese-language transparent RAG project
 ├── Doubao_Project/  # C/Java lessons and several RAG implementations
 ├── Qoter/           # HTML, Python, Markdown, and LaTeX study materials
@@ -268,7 +292,7 @@ node --test tests/rules.test.js
 - Licenses and disclaimers can differ by project. Check the relevant project documentation or license file.
 
 First commit: 2026-09-22 08:33 (UTC+9, Tokyo, Japan)<br>
-README updated: 2026-09-26
+README updated: 2026-09-30
 
 ---
 
@@ -296,6 +320,7 @@ README updated: 2026-09-26
 | 内容 | 形式 | 概要 |
 | --- | --- | --- |
 | [蜀門甩二](Codex/sichuan-shuai-er/) | HTML / CSS / JavaScript | 4 人が 2 チームに分かれて対戦する四川式カードゲーム。ブラウザで動作し、AI 対戦相手、進行状況の保存、ルールのテストを備えています。 |
+| [LLM の仕組みを学ぶ](Codex/learn_llm_from_scratch.py) | Python 3.10+ | 標準ライブラリだけでバイト単位の BPE、埋め込み、因果的注意機構、学習、トークン単位の生成を実装。コード内の説明は中国語。 |
 | [HowToLiveBetter オフライン版](Codex/HowToLiveBetter.html) / [PDF 版](Codex/HowToLiveBetter-1.pdf) | HTML / PDF | 検索できるオフライン版と 344 ページの PDF。 |
 | [IT パスポート 2026 完全復習ガイド](Codex/ITパスポート_2026_完全復習ガイド_Ver6.5.docx) | DOCX | 日本語の IT パスポート試験対策資料。 |
 | [日本の特色ある駅名 200 選](Codex/japan_special_station_names_200.xlsx) | XLSX | 日本の特色ある駅名をまとめた表。 |
@@ -328,7 +353,18 @@ README updated: 2026-09-26
 
 ### クイックスタート
 
-各コマンド群はリポジトリのルートから実行してください。
+各コマンド群はリポジトリのルートから開始してください。
+
+#### Python 学習用スクリプト
+
+Python 3.10 以降が必要です。外部パッケージは使いません。
+
+```bash
+python3 Codex/learn_llm_from_scratch.py
+python3 Codex/learn_llm_from_scratch.py --check-grad --steps 0
+```
+
+1 行目はモデルを学習させて文章を生成します。2 行目は手書きの勾配を数値微分で確認します。
 
 #### RAG プロジェクト
 
@@ -387,7 +423,7 @@ node --test tests/rules.test.js
 ```text
 .
 ├── Claude/          # 書籍、Vim・空港の資料、LaTeX 早見表
-├── Codex/           # ブラウザゲーム、文書、表、PDF/HTML、画像素材
+├── Codex/           # ブラウザゲーム、LLM 学習用スクリプト、文書、表、PDF/HTML、画像素材
 ├── Dola_work/       # 日本語のホワイトボックス RAG
 ├── Doubao_Project/  # C/Java 学習用サンプルと複数の RAG 実装
 ├── Qoter/           # HTML、Python、Markdown、LaTeX の学習資料
@@ -402,4 +438,4 @@ node --test tests/rules.test.js
 - ライセンスや免責事項はプロジェクトごとに異なる場合があります。各プロジェクトの説明またはライセンスファイルを確認してください。
 
 初回コミット：2026-09-22 08:33（UTC+9、東京）<br>
-README 更新日：2026-09-26
+README 更新日：2026-09-30
