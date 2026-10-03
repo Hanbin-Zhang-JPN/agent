@@ -1,0 +1,12 @@
+[
+  {"question":"生产数据库权限需要谁审批？有效期多长？","expected_source":"01-团队入职手册.md","expected_quote":"默认有效期为 24 小时"},
+  {"question":"灰度发布时什么条件触发回滚？","expected_source":"02-发布与故障处理.md","expected_quote":"错误率连续 5 分钟超过 1%"},
+  {"question":"P1 故障必须在多少分钟内响应？","expected_source":"02-发布与故障处理.md","expected_quote":"10 分钟内响应"},
+  {"question":"报销费用发生后多久提交？需要什么资料？","expected_source":"03-费用与远程协作.md","expected_quote":"费用发生后的 30 天内提交"},
+  {"question":"国内出差住宿上限是多少？","expected_source":"03-费用与远程协作.md","expected_quote":"每人每晚 600 元"},
+  {"question":"新旧制度冲突应该怎么处理？","expected_source":"04-知识库维护规范.md","expected_quote":"不能仅根据检索分数判断有效版本"},
+  {"question":"多人使用知识库时在哪一步过滤用户权限？","expected_source":"04-知识库维护规范.md","expected_quote":"检索之前按用户权限过滤文档"},
+  {"question":"单件设备超过多少金额需要事先审批？","expected_source":"03-费用与远程协作.md","expected_quote":"单件设备超过 3000 元"},
+  {"question":"量子纠缠光子态","expected_source":null},
+  {"question":"公司明年的涨薪比例是多少？","expected_source":null}
+]

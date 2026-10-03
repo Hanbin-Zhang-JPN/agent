@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aurora-math" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/classic-doudizhu" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/dayfolio" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/matrixdesk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/nichu-offline-dictionary" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/offline-eda-studio" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/programming-from-zero" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/sichuan-mahjong" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/sichuan-shuai-er" vcs="Git" />
+  </component>
+</project>

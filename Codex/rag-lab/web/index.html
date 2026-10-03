@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>知有 · RAG 实验室</title><link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="rail">
+    <a class="brand" href="/" aria-label="知有首页"><span class="logo">知</span><span>知有<small>RAG LAB</small></span></a>
+    <div class="rail-label">你的知识，成为答案</div>
+    <nav aria-label="主导航">
+      <button class="nav active" data-page="ask"><span class="nav-icon">⌕</span> 知识问答 <span class="nav-index">01</span></button>
+      <button class="nav" data-page="library"><span class="nav-icon">▤</span> 资料库 <span class="nav-index">02</span></button>
+      <button class="nav" data-page="lab"><span class="nav-icon">◈</span> 原理实验室 <span class="nav-index">03</span></button>
+    </nav>
+    <div class="rail-bottom"><div class="local-indicator"><i></i> 本地工作区</div><p>把回答的每一步，<br>都变成看得见的知识。</p><button class="text-btn" id="connection-btn">模型接入 ↗</button><div class="rail-version">PYTHON + SQLITE · v1.0</div></div>
+  </aside>
+  <main>
+    <header class="topbar"><div>WORKSPACE <span>/</span> <strong id="page-name">知识问答</strong></div><div class="top-actions"><span class="badge" id="model-badge">本地证据模式</span><button class="small-btn" id="header-import">＋ 导入资料</button></div></header>
+
+    <section id="page-ask" class="page">
+      <div class="eyebrow">RETRIEVAL · AUGMENTED · GENERATION</div>
+      <div class="hero"><div><h1>让资料开口，<br>让答案有据可查。</h1><p>从个人笔记到团队手册。问一个问题，看看知识如何被找回。</p></div><div class="hero-art" aria-hidden="true"><div class="art-stack a"></div><div class="art-stack b"></div><div class="art-stack c"><span>knowledge</span><div></div><div></div><div></div></div><span class="art-dot"></span><span class="art-caption">DOCUMENTS → EVIDENCE → ANSWER</span></div></div>
+      <div class="stats"><div><strong id="stat-docs">—</strong><span>份资料</span></div><div><strong id="stat-chunks">—</strong><span>个可检索片段</span></div><div><strong id="stat-vectors">—</strong><span>个语义向量</span></div><div class="stats-note">看得见的检索过程<br><span>每条引用，都能回到原文</span></div></div>
+      <div class="workspace">
+        <div class="question-column">
+          <form id="ask-form" class="question-card">
+            <div class="section-line"><h2>你想知道什么？</h2><span>ASK YOUR KNOWLEDGE</span></div>
+            <label class="sr-only" for="question">你的问题</label><textarea id="question" maxlength="2000" placeholder="例如：灰度发布时，什么条件会触发回滚？" required></textarea>
+            <div class="question-footer"><span>⌘ / Ctrl + Enter 提问 · 每次问题独立检索</span><button class="primary" id="ask-btn" type="submit">检索并回答 <span>↗</span></button></div>
+            <div class="suggestions"><button type="button" data-question="灰度发布时什么条件触发回滚？">发布回滚条件</button><button type="button" data-question="生产数据库权限需要谁审批？有效期多长？">生产权限审批</button><button type="button" data-question="报销费用发生后多久提交？需要什么资料？">报销规则</button></div>
+          </form>
+          <div id="ask-status" class="status" role="status" aria-live="polite"></div>
+          <div id="answer-panel" class="answer-panel empty-answer"><div class="empty-symbol">↳</div><h3>一个答案，一条可追溯的路径。</h3><p>提出问题后，这里会显示答案和引用。<br>展开检索过程，看看每一个片段为什么被选中。</p><button class="text-btn demo-load">加载示例资料，开始体验 ↗</button><small>示例为虚构团队制度，你可以随时替换成自己的资料。</small></div>
+          <details class="trace-panel hidden" id="trace-panel"><summary>查看这次检索的完整过程 <span>OPEN THE BLACK BOX ＋</span></summary><div id="trace-content"></div></details>
+        </div>
+        <aside class="controls-card">
+          <div class="section-line"><h2>检索设置</h2><span class="mini-tag">可实验</span></div>
+          <label for="search-mode">检索方式</label><select id="search-mode"><option value="hybrid">混合检索 · RRF</option><option value="bm25">关键词检索 · BM25</option><option value="vector">向量检索 · 余弦相似度</option></select>
+          <label for="vector-kind">向量类型</label><select id="vector-kind"><option value="tfidf">本地 TF-IDF · 词法向量</option><option value="semantic">模型 Embedding · 语义向量</option></select><p class="help">TF-IDF 比较词语分布，不理解同义表达。语义向量需要接口与预先构建索引。</p>
+          <label for="top-k">候选片段 <output id="top-k-value">4</output></label><input type="range" id="top-k" min="1" max="12" value="4"><div class="range-labels"><span>Top 1 · 更聚焦</span><span>Top 12 · 更多线索</span></div>
+          <label for="budget">上下文预算 <output id="budget-value">6000 字符</output></label><input type="range" id="budget" min="500" max="16000" step="500" value="6000"><p class="help">按原文字符计数，不是模型 Token。整块超预算时会跳过。</p>
+          <label for="doc-scope">资料范围</label><select id="doc-scope"><option value="all">全部资料</option></select>
+          <div class="generation-option"><label class="switch-label"><input type="checkbox" id="generate"> 使用大模型归纳回答</label><p class="help" id="generation-help">需配置服务端 API Key。开启后将问题和选中证据发送到配置的模型接口。</p></div>
+          <div class="method-note"><span>↳ 原理提示</span><p id="method-note">混合检索把两个排序列表通过 RRF 合并，不直接相加不同量纲的分数。</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="page-library" class="page hidden">
+      <div class="eyebrow">YOUR KNOWLEDGE, ORGANIZED</div><h1 class="page-title">资料是答案的起点。</h1><p class="page-intro">导入、分块、检查原文。资料与索引保存在本机，内容相同的文档自动去重。</p>
+      <div class="library-grid">
+        <div class="card import-card"><div class="section-line"><h2>添加资料</h2><span>INGEST</span></div><label class="drop-zone" id="drop-zone" for="file-input"><span class="upload-symbol">↑</span><strong>选择文件，或拖到这里</strong><span>TXT · Markdown · DOCX · 文本型 PDF</span><small id="pdf-note">单文件最多 8 MB · PDF 需要可选依赖</small></label><input id="file-input" class="sr-only" type="file" accept=".txt,.md,.markdown,.docx,.pdf" multiple>
+          <details class="paste-section"><summary>或粘贴一段笔记 ＋</summary><label for="note-name">文档名称</label><input id="note-name" value="我的笔记.md" maxlength="160"><label for="note-text">内容</label><textarea id="note-text" rows="7" placeholder="会议纪要、流程说明、学习笔记……"></textarea><button class="primary" id="save-note">导入这段笔记 ↗</button></details>
+          <div class="two-inputs"><div><label for="chunk-size">块大小（字符）</label><input id="chunk-size" type="number" min="100" max="2000" step="50" value="500"></div><div><label for="chunk-overlap">重叠（字符）</label><input id="chunk-overlap" type="number" min="0" max="999" value="80"></div></div><p class="help">默认按段落与句子边界分块。导入前可去实验室观察分块效果。</p><div class="status" id="import-status" role="status" aria-live="polite"></div>
+        </div>
+        <div class="card"><div class="section-line"><h2>我的资料 <span id="doc-count" class="count"></span></h2><button class="text-btn demo-load">加载示例 ↗</button></div><div id="document-list"></div></div>
+      </div>
+      <div class="embedding-card"><div><div class="eyebrow">OPTIONAL · SEMANTIC INDEX</div><h3>让检索理解相近的意思。</h3><p id="embedding-info">本地模式已可使用。配置模型后，可为资料构建语义向量。</p><small>点击构建将文档片段发送到模型接口，可能产生 API 费用。未完成的批次可重试，已完成的自动跳过。</small></div><button class="primary" id="build-embeddings">构建语义向量 ↗</button><div id="embedding-status" class="status" role="status"></div></div>
+    </section>
+
+    <section id="page-lab" class="page hidden">
+      <div class="eyebrow">LEARN BY MAKING IT VISIBLE</div><h1 class="page-title">从能用，到看懂。</h1><p class="page-intro">RAG 的核心：先找证据，再把证据提供给生成模型。改一个参数，观察发生了什么。</p>
+      <div class="pipeline"><div><span>01 / INGEST</span><strong>解析与分块</strong><p>保留来源和字符位置</p></div><b>→</b><div><span>02 / RETRIEVE</span><strong>找回相关片段</strong><p>BM25 / TF-IDF / Embedding</p></div><b>→</b><div><span>03 / AUGMENT</span><strong>组织上下文</strong><p>RRF 排序 · 去重 · 预算</p></div><b>→</b><div><span>04 / GENERATE</span><strong>回答与引用</strong><p>证据摘录 / 模型归纳</p></div></div>
+      <div class="lesson-grid"><article class="lesson"><span>R · 检索</span><h3>相关，并不等于正确。</h3><p>BM25 看关键词的稀有程度与频次；TF-IDF 用词法向量比较方向；Embedding 可以捕捉语义接近。所有分数都只表示排序偏好，不能当作答案正确率。</p><code>cos(q, d) = q·d / (‖q‖ ‖d‖)</code></article><article class="lesson"><span>A · 增强</span><h3>把证据放进上下文。</h3><p>RRF 根据名次融合两路检索：在两路都靠前的片段更占优势。合并后去掉大量重叠的片段，再按字符预算选取完整块。</p><code>RRF(d) = Σ 1 / (60 + rank(d))</code></article><article class="lesson"><span>G · 生成</span><h3>模型组织语言，证据约束事实。</h3><p>生成模型接收问题与选中的原文，按来源编号引用。程序检查编号是否存在，但这不能证明每句话符合原文；仍需人工检查事实与适用条件。</p><code>answer = LLM(question, evidence)</code></article></div>
+      <div class="card split-lab"><div class="section-line"><h2>实验 01 <span>分块可视化</span></h2><span>CHUNKING PLAYGROUND</span></div><p class="help">试试 180 与 500 字符。观察同一句话是否跨块，以及重叠重复了多少内容。预览不会修改资料库。</p><textarea id="split-text" rows="6"></textarea><div class="split-controls"><label>块大小 <input id="split-size" type="number" min="100" max="2000" value="180"></label><label>重叠 <input id="split-overlap" type="number" min="0" max="999" value="40"></label><button class="primary" id="split-btn">观察分块 ↗</button></div><div class="status" id="split-status" role="status"></div><div id="split-results" class="split-results"></div></div>
+      <div class="card eval-lab"><div class="section-line"><h2>实验 02 <span>检索对照评测</span></h2><span>EVALUATE, THEN ITERATE</span></div><p class="help">用同一组问题、同一份知识库比较 BM25、TF-IDF 与混合检索。默认 10 道题基于虚构示例，使用前先加载示例。也可以换成你的标准证据。</p><div class="eval-controls"><button class="small-btn demo-load">加载示例资料</button><label for="eval-k">Top K <select id="eval-k"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>12</option></select></label><button class="primary" id="eval-btn">运行本地评测 ↗</button></div><details class="eval-editor"><summary>编辑评测集 JSON ＋</summary><p class="help">expected_source 为文档名，expected_quote 为应命中的原文短语；无答案题用 expected_source: null。</p><textarea id="eval-cases" rows="14" spellcheck="false" aria-label="评测集 JSON"></textarea></details><div class="status" id="eval-status" role="status"></div><div id="eval-results"></div></div>
+      <div class="practice-card"><h3>一条可以亲手完成的学习路线</h3><ol><li>提问并展开检索过程，追踪一个 [S1] 从原文到答案的路径。</li><li>在实验 01 改变块大小，再在资料库对某份文档重新分块。</li><li>在实验 02 用 Top 1 与 Top 4 对照；检查未命中的题，区分检索问题与资料缺失。</li><li>提一个资料没有答案的问题，观察字面相似如何造成误召回。</li><li>接入语义向量后，试问“新版本出了问题怎么办”，比较它与关键词模式。</li></ol><p>进阶：替换中文分词器、加入重排序、做版本过滤，然后用真实评测集验证变化。</p></div>
+    </section>
+    <footer>知有 · RAG 实验室 <span>小型知识库，透明的原理。此版本供本机个人使用。</span></footer>
+  </main>
+  <dialog id="document-dialog"><div class="dialog-header"><h2 id="dialog-title">原文</h2><button class="close-btn" data-close="document-dialog" aria-label="关闭">×</button></div><div id="dialog-content"></div></dialog>
+  <dialog id="connection-dialog"><div class="dialog-header"><h2>接入模型</h2><button class="close-btn" data-close="connection-dialog" aria-label="关闭">×</button></div><p>本地检索无需 Key。要开启模型归纳或语义向量，请停止服务，在启动它的终端设置以下环境变量，再重启。</p><pre class="config-code">export OPENAI_API_KEY='你的 API Key'
+export OPENAI_MODEL='你账户可用的 Responses 模型名称'
+export OPENAI_EMBEDDING_MODEL='text-embedding-3-small'
+python3 server.py --demo</pre><p>API Key 仅保存在服务端环境，不会传给网页。接入后，在资料库点击“构建语义向量”，再将检索设置中的向量类型切为“模型 Embedding”。生成回答可独立开启。</p><p class="help">默认使用 OpenAI API。自定义 OPENAI_BASE_URL 需同时支持 /embeddings 与 /responses，且使用 HTTPS。构建向量会外发资料；归纳回答会外发问题和选中证据。</p><div id="connection-status" class="method-note"></div><p><a href="https://developers.openai.com/api/docs/guides/embeddings" target="_blank" rel="noreferrer">Embedding 官方文档 ↗</a>　<a href="https://developers.openai.com/api/docs/guides/text" target="_blank" rel="noreferrer">Responses 官方文档 ↗</a></p></dialog>
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* Course content and example answers. */
+window.CSS_LAB_LESSONS = [
+  {
+    id: "selectors", category: "基础入门", title: "选择器与颜色", duration: "8 分钟",
+    subtitle: "CSS 从选中元素开始。给文字、卡片和按钮一点自己的性格。",
+    conceptTitle: "先选中，再装饰",
+    conceptBody: "选择器告诉浏览器要修改谁。元素选择器影响同类标签；类选择器以英文句点开头，适合给特定组件添加样式。花括号里写属性和值。",
+    conceptCode: ".card { color: #243b53; }",
+    taskIntro: "为这张小小的个人名片设计配色。",
+    tasks: ["把卡片背景改为淡紫色", "让标题使用深紫色，并调大字号", "给按钮添加醒目的背景色和白色文字"],
+    hint: "找到 .card、h1 和 .button 这三个选择器。颜色可以用十六进制值，例如 #eee8ff。",
+    html: '<div class="card"><span class="eyebrow">HELLO, WORLD</span><h1>你好，我是小林</h1><p>喜欢设计，也喜欢把想法写成网页。</p><a class="button" href="#">认识我 →</a></div>',
+    starter: '.card { background: #fff; padding: 32px; border-radius: 20px; }\n.eyebrow { color: #7659a6; font-size: 12px; letter-spacing: 2px; }\nh1 { color: #333; font-size: 26px; }\np { color: #615b6b; }\n.button { display: inline-block; padding: 12px 18px; border-radius: 9px; background: #ddd; color: #333; text-decoration: none; }',
+    solution: '.card { background: #eee8ff; padding: 32px; border-radius: 20px; }\n.eyebrow { color: #7659a6; font-size: 12px; letter-spacing: 2px; }\nh1 { color: #432b73; font-size: 32px; }\np { color: #615b6b; }\n.button { display: inline-block; padding: 12px 18px; border-radius: 9px; background: #6c46bb; color: #fff; text-decoration: none; }'
+  },
+  {
+    id: "box-model", category: "基础入门", title: "盒模型", duration: "10 分钟",
+    subtitle: "页面上的每个元素都是一个盒子，间距和边框决定它的呼吸感。",
+    conceptTitle: "内容之外，还有三层空间",
+    conceptBody: "padding 是内容与边框之间的内边距，border 是边框，margin 是元素与邻居之间的外边距。box-sizing: border-box 让声明的宽度包含内边距和边框。",
+    conceptCode: "内容 → padding → border → margin",
+    taskIntro: "调整两张通知卡片之间的空间和视觉层次。",
+    tasks: ["给每张卡片 24px 的内边距", "给卡片添加 1px 的浅色边框", "把两张卡片的间距设为 16px"],
+    hint: "内边距用 padding，边框用 border。垂直间距可写在 .notice 的 margin-bottom 上。",
+    html: '<div class="notice"><span class="tag">01 / TODAY</span><h2>留一点空白</h2><p>好的布局，让内容有余地呼吸。</p></div><div class="notice"><span class="tag">02 / TOMORROW</span><h2>再向前一步</h2><p>调整间距，观察整个页面的节奏。</p></div>',
+    starter: '* { box-sizing: border-box; }\n.notice { background: #fff; border-radius: 16px; padding: 8px; border: 1px solid transparent; margin-bottom: 0; }\n.tag { color: #8b6fcb; font-size: 11px; letter-spacing: 2px; }\nh2 { margin: 12px 0 6px; color: #302e45; }\np { margin: 0; color: #777586; font-size: 14px; }',
+    solution: '* { box-sizing: border-box; }\n.notice { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #e4e0ef; margin-bottom: 16px; }\n.tag { color: #8b6fcb; font-size: 11px; letter-spacing: 2px; }\nh2 { margin: 12px 0 6px; color: #302e45; }\np { margin: 0; color: #777586; font-size: 14px; }'
+  },
+  {
+    id: "typography", category: "视觉表达", title: "文字排版", duration: "9 分钟",
+    subtitle: "字号、行高和字距会影响阅读体验，也会改变页面的气质。",
+    conceptTitle: "让文字更容易阅读",
+    conceptBody: "font-size 控制字号，font-weight 控制粗细，line-height 控制行间距。正文通常需要比标题更宽松的行高；限制文本宽度可避免一行过长。",
+    conceptCode: "line-height: 1.7; max-width: 32ch;",
+    taskIntro: "让这段文章更有杂志感，同时保持易读。",
+    tasks: ["把主标题设为 36px，并增加字重", "将正文行高调到 1.8", "给正文设置不超过 34ch 的宽度"],
+    hint: "在 h1 里设置 font-size 与 font-weight；在 .body-copy 里设置 line-height 和 max-width。",
+    html: '<article class="story"><span class="meta">DESIGN NOTES · 03</span><h1>慢一点，<br>看见细节。</h1><p class="body-copy">网页设计不仅是摆放元素。文字的节奏、段落的宽度和留白的分寸，会一起决定阅读时的感受。</p><span class="byline">文 / CSS LAB</span></article>',
+    starter: '.story { padding: 30px; background: #fffaf2; border-radius: 16px; }\n.meta { color: #bc754f; font-size: 11px; letter-spacing: 2px; }\nh1 { margin: 18px 0; color: #3d332f; font-size: 24px; font-weight: 400; line-height: 1.2; }\n.body-copy { color: #615853; font-size: 15px; line-height: 1.2; max-width: none; }\n.byline { display: block; margin-top: 20px; color: #ad9a8e; font-size: 12px; }',
+    solution: '.story { padding: 30px; background: #fffaf2; border-radius: 16px; }\n.meta { color: #bc754f; font-size: 11px; letter-spacing: 2px; }\nh1 { margin: 18px 0; color: #3d332f; font-size: 36px; font-weight: 800; line-height: 1.2; }\n.body-copy { color: #615853; font-size: 15px; line-height: 1.8; max-width: 34ch; }\n.byline { display: block; margin-top: 20px; color: #ad9a8e; font-size: 12px; }'
+  },
+  {
+    id: "flexbox", category: "布局进阶", title: "Flexbox 布局", duration: "12 分钟",
+    subtitle: "让元素沿着一条轴排列，轻松处理对齐和间距。",
+    conceptTitle: "从一条主轴开始",
+    conceptBody: "display: flex 会把子元素变成弹性项目。justify-content 管理主轴上的分布，align-items 管理交叉轴上的对齐，gap 管理项目之间的距离。",
+    conceptCode: "display: flex; gap: 12px;",
+    taskIntro: "做一条左右分布、垂直居中的导航栏。",
+    tasks: ["给 .navbar 开启 Flexbox", "让品牌在左、链接组在右", "让链接横向排列，并设置 14px 间距"],
+    hint: "在 .navbar 里用 justify-content: space-between 和 align-items: center；.links 本身也需要 display: flex。",
+    html: '<nav class="navbar"><strong class="logo">north<span>°</span></strong><div class="links"><a href="#">首页</a><a href="#">作品</a><a href="#">关于</a></div></nav><div class="content"><span>CREATIVE STUDIO</span><h1>向好奇心出发。</h1></div>',
+    starter: '.navbar { background: #fff; padding: 18px 22px; border-radius: 14px; }\n.logo { color: #173c50; font-size: 22px; }\n.logo span { color: #e69163; }\n.links { }\n.links a { color: #56717d; text-decoration: none; font-size: 13px; }\n.content { padding: 36px 22px; }\n.content span { color: #dc875b; font-size: 11px; letter-spacing: 2px; }\nh1 { color: #173c50; font-size: 26px; }',
+    solution: '.navbar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 18px 22px; border-radius: 14px; }\n.logo { color: #173c50; font-size: 22px; }\n.logo span { color: #e69163; }\n.links { display: flex; gap: 14px; }\n.links a { color: #56717d; text-decoration: none; font-size: 13px; }\n.content { padding: 36px 22px; }\n.content span { color: #dc875b; font-size: 11px; letter-spacing: 2px; }\nh1 { color: #173c50; font-size: 26px; }'
+  },
+  {
+    id: "grid", category: "布局进阶", title: "Grid 网格", duration: "12 分钟",
+    subtitle: "当布局有行也有列，网格能帮你更清楚地组织内容。",
+    conceptTitle: "在二维空间里排版",
+    conceptBody: "Grid 可以同时控制列与行。grid-template-columns 定义每列的宽度，fr 表示分配剩余空间。repeat() 可以简洁地创建重复列。",
+    conceptCode: "grid-template-columns: repeat(2, 1fr);",
+    taskIntro: "把四张颜色卡片排成两列。",
+    tasks: ["给 .palette 开启 Grid", "建立两列等宽网格", "设置 12px 的网格间距"],
+    hint: "在 .palette 中依次写 display: grid、grid-template-columns 和 gap。",
+    html: '<div class="palette"><div class="swatch peach"><span>01</span><strong>Peach</strong><small>#F5B79A</small></div><div class="swatch lilac"><span>02</span><strong>Lilac</strong><small>#C6B5E8</small></div><div class="swatch mint"><span>03</span><strong>Mint</strong><small>#A9DAC7</small></div><div class="swatch blue"><span>04</span><strong>Blue</strong><small>#A8C8E8</small></div></div>',
+    starter: '.palette { }\n.swatch { min-height: 116px; padding: 18px; border-radius: 14px; color: #2c3440; }\n.swatch span { display: block; font-size: 11px; opacity: .6; }\n.swatch strong { display: block; margin-top: 20px; font-size: 20px; }\n.swatch small { opacity: .7; }\n.peach { background: #f5b79a; }\n.lilac { background: #c6b5e8; }\n.mint { background: #a9dac7; }\n.blue { background: #a8c8e8; }',
+    solution: '.palette { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }\n.swatch { min-height: 116px; padding: 18px; border-radius: 14px; color: #2c3440; }\n.swatch span { display: block; font-size: 11px; opacity: .6; }\n.swatch strong { display: block; margin-top: 20px; font-size: 20px; }\n.swatch small { opacity: .7; }\n.peach { background: #f5b79a; }\n.lilac { background: #c6b5e8; }\n.mint { background: #a9dac7; }\n.blue { background: #a8c8e8; }'
+  },
+  {
+    id: "responsive", category: "布局进阶", title: "响应式设计", duration: "13 分钟",
+    subtitle: "让布局适应不同屏幕，而不是只在自己的电脑上好看。",
+    conceptTitle: "根据空间调整布局",
+    conceptBody: "媒体查询可以在特定视口宽度下应用样式。点击预览区的手机图标，对比宽窄视图。练习在 480px 以下覆盖宽屏样式。",
+    conceptCode: "@media (max-width: 480px) { … }",
+    taskIntro: "让双栏旅行卡片在手机上变为单栏。",
+    tasks: ["桌面布局保留两列", "在 480px 以下改为单列", "手机视图下让标题字号缩小到 24px"],
+    hint: "在底部的 @media 规则里改写 .travel 的 grid-template-columns，并覆盖 h1 的 font-size。",
+    html: '<div class="travel"><div class="travel-visual"><span>✳</span><div class="sun"></div><div class="hill"></div></div><div class="travel-copy"><small>WEEKEND NOTES</small><h1>去看更远的地方。</h1><p>给自己一段慢下来的时间。</p><a href="#">探索路线 →</a></div></div>',
+    starter: '.travel { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border-radius: 18px; background: #fff; }\n.travel-visual { position: relative; min-height: 230px; overflow: hidden; background: #bcd9d2; }\n.travel-visual > span { position: absolute; top: 18px; left: 20px; color: #fff; font-size: 34px; }\n.sun { position: absolute; width: 82px; height: 82px; border-radius: 50%; background: #ffe0a0; top: 45px; right: 50px; }\n.hill { position: absolute; width: 120%; height: 170px; border-radius: 50% 50% 0 0; background: #6ba99a; bottom: -70px; left: -10%; }\n.travel-copy { padding: 26px; }\nsmall { color: #5a9d8b; letter-spacing: 2px; }\nh1 { color: #263f39; font-size: 30px; line-height: 1.25; }\np { color: #6d7974; font-size: 14px; }\na { display: inline-block; margin-top: 16px; color: #237c65; text-decoration: none; font-weight: 700; }\n@media (max-width: 480px) {\n  /* 在这里写手机布局 */\n}',
+    solution: '.travel { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; border-radius: 18px; background: #fff; }\n.travel-visual { position: relative; min-height: 230px; overflow: hidden; background: #bcd9d2; }\n.travel-visual > span { position: absolute; top: 18px; left: 20px; color: #fff; font-size: 34px; }\n.sun { position: absolute; width: 82px; height: 82px; border-radius: 50%; background: #ffe0a0; top: 45px; right: 50px; }\n.hill { position: absolute; width: 120%; height: 170px; border-radius: 50% 50% 0 0; background: #6ba99a; bottom: -70px; left: -10%; }\n.travel-copy { padding: 26px; }\nsmall { color: #5a9d8b; letter-spacing: 2px; }\nh1 { color: #263f39; font-size: 30px; line-height: 1.25; }\np { color: #6d7974; font-size: 14px; }\na { display: inline-block; margin-top: 16px; color: #237c65; text-decoration: none; font-weight: 700; }\n@media (max-width: 480px) {\n  .travel { grid-template-columns: 1fr; }\n  .travel-visual { min-height: 160px; }\n  h1 { font-size: 24px; }\n}'
+  },
+  {
+    id: "interaction", category: "细节打磨", title: "交互状态", duration: "9 分钟",
+    subtitle: "悬停和焦点状态能告诉使用者：这里可以操作。",
+    conceptTitle: "为操作提供反馈",
+    conceptBody: ":hover 在鼠标悬停时生效，:focus-visible 在键盘聚焦时显示。transition 能让状态变化更柔和。清晰的键盘焦点样式也能提升易用性。",
+    conceptCode: ".button:hover { transform: translateY(-3px); }",
+    taskIntro: "让这个按钮在鼠标和键盘操作时都有反馈。",
+    tasks: ["添加 0.25s 的平滑过渡", "悬停时按钮向上移动 3px", "键盘聚焦时显示清晰的外轮廓"],
+    hint: "分别写在 .button、.button:hover 和 .button:focus-visible 中。用 Tab 键测试焦点状态。",
+    html: '<div class="invite"><span>NEW DROP · 2026</span><h1>一起创造点有趣的。</h1><p>一个小小的点击，也值得有回应。</p><button class="button">加入计划 <span>↗</span></button></div>',
+    starter: '.invite { padding: 34px; border-radius: 18px; text-align: center; background: #202b4a; color: #fff; }\n.invite > span { color: #a9c4ff; font-size: 11px; letter-spacing: 2px; }\nh1 { font-size: 26px; margin: 18px 0 8px; }\np { color: #bec8df; font-size: 14px; }\n.button { margin-top: 18px; padding: 14px 20px; border: 0; border-radius: 9px; background: #f4c66c; color: #23304f; font: inherit; font-weight: 700; cursor: pointer; }\n.button span { margin-left: 12px; }\n.button:hover { }\n.button:focus-visible { }',
+    solution: '.invite { padding: 34px; border-radius: 18px; text-align: center; background: #202b4a; color: #fff; }\n.invite > span { color: #a9c4ff; font-size: 11px; letter-spacing: 2px; }\nh1 { font-size: 26px; margin: 18px 0 8px; }\np { color: #bec8df; font-size: 14px; }\n.button { margin-top: 18px; padding: 14px 20px; border: 0; border-radius: 9px; background: #f4c66c; color: #23304f; font: inherit; font-weight: 700; cursor: pointer; transition: transform .25s, box-shadow .25s; }\n.button span { margin-left: 12px; }\n.button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px #0004; }\n.button:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }'
+  },
+  {
+    id: "animation", category: "细节打磨", title: "CSS 动画", duration: "11 分钟",
+    subtitle: "用有节制的动效表达变化，让静态页面多一点生命力。",
+    conceptTitle: "定义关键帧，让元素动起来",
+    conceptBody: "@keyframes 定义动画开始和结束时的状态，animation 将动画应用到元素。优先使用 transform 和 opacity；用 prefers-reduced-motion 尊重希望减少动画的使用者。",
+    conceptCode: "animation: float 3s ease-in-out infinite;",
+    taskIntro: "让中央的星球缓缓上下浮动。",
+    tasks: ["在 @keyframes float 中设置上下位移", "给 .planet 应用 3s 无限循环动画", "在减少动态效果时关闭动画"],
+    hint: "用 transform: translateY(-12px) 设置中间帧，再给 .planet 添加 animation。最后检查 @media (prefers-reduced-motion: reduce)。",
+    html: '<div class="space"><span class="tiny-star star-one">✦</span><span class="tiny-star star-two">✦</span><div class="planet"><div class="ring"></div><span>✳</span></div><p>保持好奇，继续探索。</p></div>',
+    starter: '.space { position: relative; min-height: 290px; display: grid; place-items: center; overflow: hidden; border-radius: 18px; background: #172642; color: #fff; }\n.planet { position: relative; width: 112px; height: 112px; border-radius: 50%; background: linear-gradient(145deg, #f8c37b, #de7993); box-shadow: inset -20px -15px 0 #a64d7d66, 0 20px 35px #0c193c88; display: grid; place-items: center; }\n.planet span { color: #ffffffaa; font-size: 40px; }\n.ring { position: absolute; inset: 38px -35px; border: 12px solid #e6d2ac; border-radius: 50%; transform: rotate(-23deg); }\n.space p { position: absolute; bottom: 20px; font-size: 13px; color: #b5c6dd; }\n.tiny-star { position: absolute; color: #f6d9a8; font-size: 18px; }\n.star-one { top: 38px; left: 20%; }\n.star-two { right: 22%; bottom: 70px; }\n@keyframes float { 0%, 100% { transform: translateY(0); } 50% { /* 向上移动 12px */ } }\n@media (prefers-reduced-motion: reduce) { .planet { /* 关闭动画 */ } }',
+    solution: '.space { position: relative; min-height: 290px; display: grid; place-items: center; overflow: hidden; border-radius: 18px; background: #172642; color: #fff; }\n.planet { position: relative; width: 112px; height: 112px; border-radius: 50%; background: linear-gradient(145deg, #f8c37b, #de7993); box-shadow: inset -20px -15px 0 #a64d7d66, 0 20px 35px #0c193c88; display: grid; place-items: center; animation: float 3s ease-in-out infinite; }\n.planet span { color: #ffffffaa; font-size: 40px; }\n.ring { position: absolute; inset: 38px -35px; border: 12px solid #e6d2ac; border-radius: 50%; transform: rotate(-23deg); }\n.space p { position: absolute; bottom: 20px; font-size: 13px; color: #b5c6dd; }\n.tiny-star { position: absolute; color: #f6d9a8; font-size: 18px; }\n.star-one { top: 38px; left: 20%; }\n.star-two { right: 22%; bottom: 70px; }\n@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }\n@media (prefers-reduced-motion: reduce) { .planet { animation: none; } }'
+  }
+];
